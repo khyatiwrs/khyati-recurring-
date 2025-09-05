@@ -1,0 +1,61 @@
+
+<h1>{{ page.title }}</h1>
+
+<h2>Article Schema</h2>
+
+{% assign article = section.settings.show_article %}
+{% if article %}
+  
+ Article title: {{ article.title }} <br>
+ <img src="{{ article.image.src | image_url: width: 300 }}" /> <br>
+
+ Article Tags: <br>
+  
+{% for tag in article.tags -%}
+  {{ tag }} ({{ tag.total_count }})
+{%- endfor %}<br>
+  
+{{ article.created_at | date: '%a, %B %d, %Y' }}
+
+<h2>Blog Schema</h2>
+  
+{% assign blog = section.settings.custom_blog %}
+  {{ blog }}
+{% for article in blog.articles %}
+   Article title: {{ article.title }} <br>
+ <img src="{{ article.image.src | image_url: width: 300 }}" /> <br> 
+
+ Article Tags: <br>
+{% for tag in article.tags -%}
+  {{ tag }} ({{ tag.total_count }})
+{%- endfor %}<br>
+  
+{{ article.created_at | date: '%a, %B %d, %Y' }}
+  
+{% endfor %}
+ 
+{% endif %}
+
+{% schema %}
+  {
+    "name": "Special Settings",
+    "settings": [
+      {
+        "type": "article",
+        "id": "show_article",
+        "label": "Select Article"
+      },
+      {
+        "type": "blog",
+        "id": "custom_blog",
+        "label": "Select Blog"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}

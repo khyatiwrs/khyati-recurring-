@@ -1,0 +1,5545 @@
+<div class="page-width ws-subscription">
+  <div class="grid">
+    <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+      <div class="rte">
+        <div class="head-title" id="head-title-id">
+          <label id="head-title">MANAGE YOUR SUBSCRIPTION</label>
+        </div>
+        <div class="preview-text" id="preview-text">
+          <p>
+            This is just a <b>preview</b> subscription contract that shows how
+            customer will see their own subscription contracts. They can
+            <b>Pause</b>, <b>Cancel</b> and <b>Skip</b> orders as per their
+            requirements.
+          </p>
+        </div>
+        <div class="recurring-content">
+          <div class="form" id="rec_entry_form">
+            <div class="input input-with-icon">
+              <label id="head-sub-title"
+                >Enter your email address to get subscription contracts</label
+              >
+              <input name="customer_email" id="customer_email" type="email" />
+              <span class="error" id="email_error"
+                >This email does not have any subscription attached.</span
+              >
+              <input
+                class="otp-input"
+                name="sro_otp"
+                id="sro_otp"
+                type="text"
+                placeholder="OTP"
+              />
+              <span class="error" id="otp_error">OTP did not match!</span>
+            </div>
+            <div class="buttons" id="ws-btn-group">
+              <button
+                class="btn subBtn otp-btn"
+                id="sro_getOtpBtn"
+                onclick="getOTP()"
+              >
+                Get OTP
+              </button>
+            </div>
+          </div>
+          <div class="orders" id="subscriptioList"></div>
+          <div class="loader" id="loading">
+            <svg
+              version="1.1"
+              id="L4"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              x="0px"
+              y="0px"
+              viewbox="0 0 100 100"
+              enable-background="new 0 0 0 0"
+              xml:space="preserve"
+            >
+              <circle fill="#000" stroke="none" cx="6" cy="50" r="6">
+                <animate
+                  attributename="opacity"
+                  dur="1s"
+                  values="0;1;0"
+                  repeatcount="indefinite"
+                  begin="0.1"
+                ></animate>
+              </circle>
+              <circle fill="#000" stroke="none" cx="26" cy="50" r="6">
+                <animate
+                  attributename="opacity"
+                  dur="1s"
+                  values="0;1;0"
+                  repeatcount="indefinite"
+                  begin="0.2"
+                ></animate>
+              </circle>
+              <circle fill="#000" stroke="none" cx="46" cy="50" r="6">
+                <animate
+                  attributename="opacity"
+                  dur="1s"
+                  values="0;1;0"
+                  repeatcount="indefinite"
+                  begin="0.3"
+                ></animate>
+              </circle>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var rec_wsApiUrl = "https://recurring-payment-api-stg.webrexstudio.com";
+  const rec_wsUrlParams = new URLSearchParams(location.search);
+  let rec_ws_env = rec_wsUrlParams.get("env");
+  if (rec_ws_env && rec_ws_env == "stage") {
+    rec_wsApiUrl = "https://recurring-payment-api-stg.webrexstudio.com";
+  }
+
+  var sar_api_data = {};
+  var sar_product_search_data = [];
+  var sar_payment_method_id = "";
+  var sar_contract_update_id = "";
+  var sar_contract_update_product_index = "";
+  var sar_customer_data = "";
+  var portal_Settings = {
+    cancelSubscription: true,
+    pauseResume: true,
+  };
+  let rec_brand_color = "#3e82b0";
+  let language_Settings = {
+    activeSubBtn: "ACTIVE",
+    address1: "Address 1",
+    address2: "Address 2",
+    billingSchedule: "Billling Schedule",
+    cancelSubBtn: "CANCEL",
+    city: "City",
+    completed: "Completed",
+    contactTitle: "Contact Detail",
+    country: "Country",
+    createdAt: "Created At",
+    customerDetailTitle: "Customer Detail",
+    dateLabel: "Date",
+    delverLabel: "Deliver cost",
+    editBtn: "Edit",
+    getOTP: "Get OTP",
+    oneTime: "One time purchases",
+    orderLabel: "Order",
+    pauseSubBtn: "PAUSE",
+    paymentMethodChange: "We have sent an email to change payment method",
+    paymentTitle: "Payment Method",
+    portalHeadTitle: "MANAGE YOUR SUBSCRIPTION",
+    portalSubTitle: "Enter your email address to get subscription contracts",
+    productPriceLabel: "Product Price",
+    productTitle: "Products",
+    purchaseOption: "Purchase options",
+    repeatText: "Repeat every",
+    resumeSubBtn: "RESUME",
+    shippingTitle: "Shipping Detail",
+    skipLabel: "Skip",
+    statusActive: "Active",
+    statusCancel: "Cancel",
+    statusExpired: "Expired",
+    statusFailed: "Failed",
+    statusLabel: "Status",
+    statusPause: "Paused",
+    submitButton: "SUBMIT",
+    subscriptionTitle: "Subscription",
+    taxLabel: "Taxes",
+    totalLabel: "Total",
+    unSkipLabel: "Unskip",
+    upcoming: "Upcoming",
+    updateBtn: "Update",
+    zipcode: "Zipcode",
+    billingLabel: "Billing",
+    everyLabel: "Every",
+    addProductBtn: "Add Product",
+    showDetailBtn: "Show Details",
+    hideDetailBtn: "Hide Details",
+    subscriptionDetailTab: "Subscription Details",
+    upcomingOrdersTab: "Upcoming Orders",
+    completedOrdersTab: "Completed Orders",
+    shippingCostLabel: "Shipping Cost",
+    expiresOnLabel: "Expire on",
+    editFrequencyModelTitle: "Edit Frequency",
+    removeProductModelTitle: "Remove Product",
+    //model
+    editNextBillingModelTitle: "Edit Next Billing Date",
+    shippingAddressModelTitle: "Shipping Address",
+    updateStatusModelTitle: "Subscription Contract Status",
+    searchProductModelTitle: "Search Product",
+    modifyProductModelTitle: "Modify Product",
+    frequencyModelLabel: "Frequency",
+    frequencyTypeModelLabel: "Frequency Type",
+    nextBillingModelLabel: "Next Billing Date",
+    qtyModelLabel: "Quantity",
+    variantModelLabel: "Variant",
+    provinceModelLabel: "Province",
+    provinceCodeModelLabel: "Province Code",
+    countryCodeModelLabel: "Country Code",
+    errorMassage: "This email does not have any subscription attached.",
+     modifyCustomerDataTitle: "Modify Customer Data",
+    firstName:"firstName",
+    lastName:"lastName",
+    email:"email",
+    firstNameLabel:"First Name",
+    lastNameLabel:"Last Name",
+    emailLabel:"Email"
+  };
+  let customCss = "";
+
+  let currencyObject = {
+    AED: {
+      currency: "AED",
+      symbol: "د.إ",
+      moneyFormat: "د.إ%%amount%% AED",
+      decimal: 2,
+    },
+    AFN: {
+      currency: "AFN",
+      symbol: "؋",
+      moneyFormat: "Af %%amount%%",
+      decimal: 0,
+    },
+    ALL: {
+      currency: "ALL",
+      symbol: "L",
+      moneyFormat: "Lek %%amount%%",
+      decimal: 0,
+    },
+    AMD: {
+      currency: "AMD",
+      symbol: "դր.",
+      moneyFormat: "%%amount%%",
+      decimal: 0,
+    },
+    ANG: {
+      currency: "ANG",
+      symbol: "ƒ",
+      moneyFormat: "ƒ %%amount%%",
+      decimal: 2,
+    },
+    AOA: {
+      currency: "AOA",
+      symbol: "Kz",
+      moneyFormat: "Kz%%amount%%",
+      decimal: 0,
+    },
+    ARS: {
+      currency: "ARS",
+      symbol: "$",
+      moneyFormat: "$%%amount_with_comma_separator%%",
+      decimal: 0,
+    },
+    AUD: {
+      currency: "AUD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    AWG: {
+      currency: "AWG",
+      symbol: "ƒ",
+      moneyFormat: "Afl%%amount%%",
+      decimal: 2,
+    },
+    AZN: {
+      currency: "AZN",
+      symbol: "₼",
+      moneyFormat: "₼%%amount%%",
+      decimal: 2,
+    },
+    BAM: {
+      currency: "BAM",
+      symbol: "КМ",
+      moneyFormat: "KM %%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    BBD: {
+      currency: "BBD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    BDT: {
+      currency: "BDT",
+      symbol: "৳",
+      moneyFormat: "Tk %%amount%%",
+      decimal: 0,
+    },
+    BGN: {
+      currency: "BGN",
+      symbol: "лв.",
+      moneyFormat: "%%amount%% лв",
+      decimal: 2,
+    },
+    BIF: {
+      currency: "BIF",
+      symbol: "Fr",
+      moneyFormat: "BIF %%amount%%",
+      decimal: 0,
+    },
+    BMD: {
+      currency: "BMD",
+      symbol: "$",
+      moneyFormat: "$ %%amount%%",
+      decimal: 2,
+    },
+    BND: {
+      currency: "BND",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    BOB: {
+      currency: "BOB",
+      symbol: "Bs.",
+      moneyFormat: "Bs%%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    BRL: {
+      currency: "BRL",
+      symbol: "R$",
+      moneyFormat: "R$ %%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    BSD: {
+      currency: "BSD",
+      symbol: "$",
+      moneyFormat: "BS$%%amount%%",
+      decimal: 2,
+    },
+    BWP: {
+      currency: "BWP",
+      symbol: "P",
+      moneyFormat: "P%%amount%%",
+      decimal: 2,
+    },
+    BZD: {
+      currency: "BZD",
+      symbol: "$",
+      moneyFormat: "BZ$%%amount%%",
+      decimal: 2,
+    },
+    CAD: {
+      currency: "CAD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    CDF: {
+      currency: "CDF",
+      symbol: "Fr",
+      moneyFormat: "FC %%amount%%",
+      decimal: 0,
+    },
+    CHF: {
+      currency: "CHF",
+      symbol: "CHF",
+      moneyFormat: "CHF %%amount%%",
+      decimal: 2,
+    },
+    CLP: {
+      currency: "CLP",
+      symbol: "$",
+      moneyFormat: "$%%amount_no_decimals%%",
+      decimal: 0,
+    },
+    CNY: {
+      currency: "CNY",
+      symbol: "¥",
+      moneyFormat: "¥%%amount%%",
+      decimal: 2,
+    },
+    COP: {
+      currency: "COP",
+      symbol: "$",
+      moneyFormat: "$%%amount_with_comma_separator%%",
+      decimal: 0,
+    },
+    CRC: {
+      currency: "CRC",
+      symbol: "₡",
+      moneyFormat: "₡ %%amount_with_comma_separator%%",
+      decimal: 0,
+    },
+    CVE: {
+      currency: "CVE",
+      symbol: "$",
+      moneyFormat: "$ %%amount%%",
+      decimal: 0,
+    },
+    CZK: {
+      currency: "CZK",
+      symbol: "Kč",
+      moneyFormat: "%%amount_with_comma_separator%% Kč",
+      decimal: 2,
+    },
+    DJF: {
+      currency: "DJF",
+      symbol: "Fdj",
+      moneyFormat: "DJF %%amount%%",
+      decimal: 0,
+    },
+    DKK: {
+      currency: "DKK",
+      symbol: "kr.",
+      moneyFormat: "kr %%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    DOP: {
+      currency: "DOP",
+      symbol: "$",
+      moneyFormat: "RD$ %%amount%%",
+      decimal: 0,
+    },
+    DZD: {
+      currency: "DZD",
+      symbol: "د.ج",
+      moneyFormat: "DA %%amount%%",
+      decimal: 0,
+    },
+    EGP: {
+      currency: "EGP",
+      symbol: "ج.م",
+      moneyFormat: "LE %%amount%%",
+      decimal: 2,
+    },
+    ETB: {
+      currency: "ETB",
+      symbol: "Br",
+      moneyFormat: "Br%%amount%%",
+      decimal: 0,
+    },
+    EUR: {
+      currency: "EUR",
+      symbol: "€",
+      moneyFormat: "€%%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    FJD: {
+      currency: "FJD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    FKP: {
+      currency: "FKP",
+      symbol: "£",
+      moneyFormat: "£ %%amount%%",
+      decimal: 2,
+    },
+    GBP: {
+      currency: "GBP",
+      symbol: "£",
+      moneyFormat: "£%%amount%%",
+      decimal: 2,
+    },
+    GEL: {
+      currency: "GEL",
+      symbol: "ლ",
+      moneyFormat: "%%amount%% GEL",
+      decimal: 2,
+    },
+    GIP: {
+      currency: "GIP",
+      symbol: "£",
+      moneyFormat: "£ %%amount%%",
+      decimal: 2,
+    },
+    GMD: {
+      currency: "GMD",
+      symbol: "D",
+      moneyFormat: "D %%amount%%",
+      decimal: 0,
+    },
+    GNF: {
+      currency: "GNF",
+      symbol: "Fr",
+      moneyFormat: "FG %%amount%%",
+      decimal: 0,
+    },
+    GTQ: {
+      currency: "GTQ",
+      symbol: "Q",
+      moneyFormat: "Q%%amount%%",
+      decimal: 2,
+    },
+    GYD: {
+      currency: "GYD",
+      symbol: "$",
+      moneyFormat: "G$%%amount%%",
+      decimal: 0,
+    },
+    HKD: {
+      currency: "HKD",
+      symbol: "$",
+      moneyFormat: "HK$%%amount%%",
+      decimal: 2,
+    },
+    HNL: {
+      currency: "HNL",
+      symbol: "L",
+      moneyFormat: "L %%amount%%",
+      decimal: 2,
+    },
+    HRK: {
+      currency: "HRK",
+      symbol: "kn",
+      moneyFormat: "%%amount_with_comma_separator%% kn",
+      decimal: 2,
+    },
+    HTG: {
+      currency: "HTG",
+      symbol: "G",
+      moneyFormat: "G %%amount%%",
+      decimal: 0,
+    },
+    HUF: {
+      currency: "HUF",
+      symbol: "Ft",
+      moneyFormat: "%%amount_no_decimals_with_comma_separator%%",
+      decimal: 0,
+    },
+    IDR: {
+      currency: "IDR",
+      symbol: "Rp",
+      moneyFormat: "%%amount_with_comma_separator%% IDR",
+      decimal: 0,
+    },
+    ILS: {
+      currency: "ILS",
+      symbol: "₪",
+      moneyFormat: "₪%%amount%%",
+      decimal: 2,
+    },
+    INR: {
+      currency: "INR",
+      symbol: "₹",
+      moneyFormat: "₹ %%amount%%",
+      decimal: 0,
+    },
+    ISK: {
+      currency: "ISK",
+      symbol: "kr",
+      moneyFormat: "%%amount_no_decimals%% kr",
+      decimal: 0,
+    },
+    JMD: {
+      currency: "JMD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 0,
+    },
+    JPY: {
+      currency: "JPY",
+      symbol: "¥",
+      moneyFormat: "¥%%amount_no_decimals%%",
+      decimal: 0,
+    },
+    KES: {
+      currency: "KES",
+      symbol: "KSh",
+      moneyFormat: "KSh%%amount%%",
+      decimal: 0,
+    },
+    KGS: {
+      currency: "KGS",
+      symbol: "som",
+      moneyFormat: "лв%%amount%%",
+      decimal: 0,
+    },
+    KHR: {
+      currency: "KHR",
+      symbol: "៛",
+      moneyFormat: "KHR%%amount%%",
+      decimal: 0,
+    },
+    KMF: {
+      currency: "KMF",
+      symbol: "Fr",
+      moneyFormat: "CF %%amount%%",
+      decimal: 0,
+    },
+    KRW: {
+      currency: "KRW",
+      symbol: "₩",
+      moneyFormat: "₩%%amount_no_decimals%%",
+      decimal: 0,
+    },
+    KYD: {
+      currency: "KYD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    KZT: {
+      currency: "KZT",
+      symbol: "〒",
+      moneyFormat: "%%amount%% KZT",
+      decimal: 0,
+    },
+    LAK: {
+      currency: "LAK",
+      symbol: "₭",
+      moneyFormat: "₭ %%amount%%",
+      decimal: 0,
+    },
+    LBP: {
+      currency: "LBP",
+      symbol: "ل.ل",
+      moneyFormat: "L.L.%%amount%%",
+      decimal: 0,
+    },
+    LKR: {
+      currency: "LKR",
+      symbol: "₨",
+      moneyFormat: "Rs %%amount%%",
+      decimal: 0,
+    },
+    LRD: {
+      currency: "LRD",
+      symbol: "$",
+      moneyFormat: "$ %%amount%%",
+      decimal: 0,
+    },
+    LSL: {
+      currency: "LSL",
+      symbol: "L",
+      moneyFormat: "L %%amount%%",
+      decimal: 2,
+    },
+    MAD: {
+      currency: "MAD",
+      symbol: "د.م.",
+      moneyFormat: "%%amount%% dh",
+      decimal: 2,
+    },
+    MDL: {
+      currency: "MDL",
+      symbol: "L",
+      moneyFormat: "%%amount%% MDL",
+      decimal: 2,
+    },
+    MKD: {
+      currency: "MKD",
+      symbol: "ден",
+      moneyFormat: "ден %%amount%%",
+      decimal: 0,
+    },
+    MMK: {
+      currency: "MMK",
+      symbol: "K",
+      moneyFormat: "K%%amount%%",
+      decimal: 0,
+    },
+    MNT: {
+      currency: "MNT",
+      symbol: "₮",
+      moneyFormat: "%%amount_no_decimals%% ₮",
+      decimal: 0,
+    },
+    MOP: {
+      currency: "MOP",
+      symbol: "P",
+      moneyFormat: "MOP$%%amount%%",
+      decimal: 2,
+    },
+    MUR: {
+      currency: "MUR",
+      symbol: "₨",
+      moneyFormat: "Rs %%amount%%",
+      decimal: 0,
+    },
+    MVR: {
+      currency: "MVR",
+      symbol: "MVR",
+      moneyFormat: "Rf%%amount%%",
+      decimal: 2,
+    },
+    MWK: {
+      currency: "MWK",
+      symbol: "MK",
+      moneyFormat: "MK %%amount%%",
+      decimal: 0,
+    },
+    MXN: {
+      currency: "MXN",
+      symbol: "$",
+      moneyFormat: "$ %%amount%%",
+      decimal: 2,
+    },
+    MYR: {
+      currency: "MYR",
+      symbol: "RM",
+      moneyFormat: "RM%%amount%%",
+      decimal: 2,
+    },
+    MZN: {
+      currency: "MZN",
+      symbol: "MTn",
+      moneyFormat: "%%amount%% Mt",
+      decimal: 0,
+    },
+    NAD: {
+      currency: "NAD",
+      symbol: "$",
+      moneyFormat: "N$%%amount%%",
+      decimal: 2,
+    },
+    NGN: {
+      currency: "NGN",
+      symbol: "₦",
+      moneyFormat: "₦%%amount%%",
+      decimal: 0,
+    },
+    NIO: {
+      currency: "NIO",
+      symbol: "C$",
+      moneyFormat: "C$%%amount%%",
+      decimal: 0,
+    },
+    NOK: {
+      currency: "NOK",
+      symbol: "kr",
+      moneyFormat: "kr %%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    NPR: {
+      currency: "NPR",
+      symbol: "₨",
+      moneyFormat: "Rs%%amount%%",
+      decimal: 0,
+    },
+    NZD: {
+      currency: "NZD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    PAB: {
+      currency: "PAB",
+      symbol: "B/.",
+      moneyFormat: "PAB %%amount%%",
+      decimal: 2,
+    },
+    PEN: {
+      currency: "PEN",
+      symbol: "S/.",
+      moneyFormat: "S/. %%amount%%",
+      decimal: 2,
+    },
+    PGK: {
+      currency: "PGK",
+      symbol: "K",
+      moneyFormat: "K %%amount%%",
+      decimal: 2,
+    },
+    PHP: {
+      currency: "PHP",
+      symbol: "₱",
+      moneyFormat: "₱%%amount%%",
+      decimal: 0,
+    },
+    PKR: {
+      currency: "PKR",
+      symbol: "₨",
+      moneyFormat: "Rs.%%amount%%",
+      decimal: 0,
+    },
+    PLN: {
+      currency: "PLN",
+      symbol: "zł",
+      moneyFormat: "%%amount_with_comma_separator%% zl",
+      decimal: 2,
+    },
+    PYG: {
+      currency: "PYG",
+      symbol: "₲",
+      moneyFormat: "Gs. %%amount_no_decimals_with_comma_separator%%",
+      decimal: 0,
+    },
+    QAR: {
+      currency: "QAR",
+      symbol: "ر.ق",
+      moneyFormat: "QAR %%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    RON: {
+      currency: "RON",
+      symbol: "Lei",
+      moneyFormat: "%%amount_with_comma_separator%% lei",
+      decimal: 2,
+    },
+    RSD: {
+      currency: "RSD",
+      symbol: "РСД",
+      moneyFormat: "%%amount%% RSD",
+      decimal: 0,
+    },
+    RUB: {
+      currency: "RUB",
+      symbol: "₽",
+      moneyFormat: "₽ %%amount_with_comma_separator%%",
+      decimal: 0,
+    },
+    RWF: {
+      currency: "RWF",
+      symbol: "FRw",
+      moneyFormat: "%%amount_no_decimals%% RF",
+      decimal: 0,
+    },
+    SAR: {
+      currency: "SAR",
+      symbol: "ر.س",
+      moneyFormat: "﷼‎%%amount%%",
+      decimal: 2,
+    },
+    SBD: {
+      currency: "SBD",
+      symbol: "$",
+      moneyFormat: "$ %%amount%%",
+      decimal: 2,
+    },
+    SCR: {
+      currency: "SCR",
+      symbol: "₨",
+      moneyFormat: "Rs %%amount%%",
+      decimal: 2,
+    },
+    SEK: {
+      currency: "SEK",
+      symbol: "kr",
+      moneyFormat: "%%amount_with_comma_separator%% kr",
+      decimal: 2,
+    },
+    SGD: {
+      currency: "SGD",
+      symbol: "$",
+      moneyFormat: "S$%%amount%%",
+      decimal: 2,
+    },
+    SHP: {
+      currency: "SHP",
+      symbol: "£",
+      moneyFormat: "£ %%amount%%",
+      decimal: 2,
+    },
+    SLL: {
+      currency: "SLL",
+      symbol: "Le",
+      moneyFormat: "Le %%amount%%",
+      decimal: 0,
+    },
+    SRD: {
+      currency: "SRD",
+      symbol: "$",
+      moneyFormat: "$ %%amount%%",
+      decimal: 2,
+    },
+    STD: {
+      currency: "STD",
+      symbol: "Db",
+      moneyFormat: "Db %%amount%%",
+      decimal: 0,
+    },
+    SZL: {
+      currency: "SZL",
+      symbol: "E",
+      moneyFormat: "L %%amount%%",
+      decimal: 2,
+    },
+    THB: {
+      currency: "THB",
+      symbol: "฿",
+      moneyFormat: "%%amount%% THB",
+      decimal: 0,
+    },
+    TJS: {
+      currency: "TJS",
+      symbol: "ЅМ",
+      moneyFormat: "TJS %%amount%%",
+      decimal: 2,
+    },
+    TOP: {
+      currency: "TOP",
+      symbol: "T$",
+      moneyFormat: "T$ %%amount%%",
+      decimal: 2,
+    },
+    TRY: {
+      currency: "TRY",
+      symbol: "₺",
+      moneyFormat: "%%amount%% TL",
+      decimal: 2,
+    },
+    TTD: {
+      currency: "TTD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    TWD: {
+      currency: "TWD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 0,
+    },
+    TZS: {
+      currency: "TZS",
+      symbol: "Sh",
+      moneyFormat: "%%amount%% TZS",
+      decimal: 0,
+    },
+    UAH: {
+      currency: "UAH",
+      symbol: "₴",
+      moneyFormat: "₴%%amount%%",
+      decimal: 0,
+    },
+    UGX: {
+      currency: "UGX",
+      symbol: "USh",
+      moneyFormat: "Ush %%amount_no_decimals%%",
+      decimal: 0,
+    },
+    USD: {
+      currency: "USD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    UYU: {
+      currency: "UYU",
+      symbol: "$",
+      moneyFormat: "$%%amount_with_comma_separator%%",
+      decimal: 0,
+    },
+    UZS: {
+      currency: "UZS",
+      symbol: "",
+      moneyFormat: "лв %%amount%%",
+      decimal: 0,
+    },
+    VND: {
+      currency: "VND",
+      symbol: "₫",
+      moneyFormat: "%%amount_no_decimals_with_comma_separator%%₫",
+      decimal: 0,
+    },
+    VUV: {
+      currency: "VUV",
+      symbol: "Vt",
+      moneyFormat: "$%%amount%%",
+      decimal: 0,
+    },
+    WST: {
+      currency: "WST",
+      symbol: "T",
+      moneyFormat: "WS$ %%amount%%",
+      decimal: 2,
+    },
+    XAF: {
+      currency: "XAF",
+      symbol: "Fr",
+      moneyFormat: "FCFA%%amount%%",
+      decimal: 0,
+    },
+    XCD: {
+      currency: "XCD",
+      symbol: "$",
+      moneyFormat: "$%%amount%%",
+      decimal: 2,
+    },
+    XOF: {
+      currency: "XOF",
+      symbol: "Fr",
+      moneyFormat: "CFA%%amount%%",
+      decimal: 0,
+    },
+    XPF: {
+      currency: "XPF",
+      symbol: "Fr",
+      moneyFormat: "%%amount_no_decimals_with_comma_separator%% XPF",
+      decimal: 0,
+    },
+    YER: {
+      currency: "YER",
+      symbol: "﷼",
+      moneyFormat: "﷼ %%amount%%",
+      decimal: 0,
+    },
+    ZAR: {
+      currency: "ZAR",
+      symbol: "R",
+      moneyFormat: "R %%amount%%",
+      decimal: 2,
+    },
+    ZMW: {
+      currency: "ZMW",
+      symbol: "ZK",
+      moneyFormat: "K%%amount_no_decimals_with_comma_separator%%",
+      decimal: 2,
+    },
+    EEK: {
+      currency: "EEK",
+      symbol: "kr",
+      moneyFormat: "kr %%amount%% EEK",
+      decimal: 2,
+    },
+    LVL: {
+      currency: "LVL",
+      symbol: "Ls",
+      moneyFormat: "Ls %%amount%%",
+      decimal: 2,
+    },
+    LTL: {
+      currency: "LTL",
+      symbol: "Lt",
+      moneyFormat: "%%amount%% Lt",
+      decimal: 2,
+    },
+    SKK: {
+      currency: "SKK",
+      symbol: "Sk",
+      moneyFormat: "Sk %%amount%% SKK",
+      decimal: 2,
+    },
+    XPT: {
+      currency: "XPT",
+      symbol: "XPT",
+      moneyFormat: "%%amount%% XPT",
+      decimal: 2,
+    },
+    OMR: {
+      currency: "OMR",
+      symbol: "ر.ع.",
+      moneyFormat: "%%amount_with_comma_separator%% OMR",
+      decimal: 2,
+    },
+    SPL: {
+      currency: "SPL",
+      symbol: "SPL",
+      moneyFormat: "%%amount%% SPL",
+      decimal: 2,
+    },
+    ZWD: {
+      currency: "ZWD",
+      symbol: "Z$",
+      moneyFormat: "Z$ %%amount%%",
+      decimal: 0,
+    },
+    ERN: {
+      currency: "ERN",
+      symbol: "ناكفا",
+      moneyFormat: "ناكفا %%amount%%",
+      decimal: 2,
+    },
+    CUP: {
+      currency: "CUP",
+      symbol: "₱",
+      moneyFormat: "₱ %%amount%%",
+      decimal: 0,
+    },
+    BTN: {
+      currency: "BTN",
+      symbol: "Nu.",
+      moneyFormat: "Nu %%amount%% BTN",
+      decimal: 0,
+    },
+    XAG: {
+      currency: "XAG",
+      symbol: "Nu.",
+      moneyFormat: "%%amount%% XAG",
+      decimal: 2,
+    },
+    MGA: {
+      currency: "MGA",
+      symbol: "Ar",
+      moneyFormat: "Ar %%amount%% MGA",
+      decimal: 0,
+    },
+    TVD: {
+      currency: "TVD",
+      symbol: "TV$",
+      moneyFormat: "TV$ %%amount%% TVD",
+      decimal: 2,
+    },
+    GGP: {
+      currency: "GGP",
+      symbol: "GGP",
+      moneyFormat: "£ %%amount%% GGP",
+      decimal: 2,
+    },
+    XPD: {
+      currency: "XPD",
+      symbol: "XPD",
+      moneyFormat: "%%amount%% XPD",
+      decimal: 2,
+    },
+    JOD: {
+      currency: "JOD",
+      symbol: "د.ا ",
+      moneyFormat: "%%amount%% JOD",
+      decimal: 2,
+    },
+    VEF: {
+      currency: "VEF",
+      symbol: "Bs.",
+      moneyFormat: "Bs. %%amount_with_comma_separator%%",
+      decimal: 2,
+    },
+    TND: {
+      currency: "TND",
+      symbol: "د.ت",
+      moneyFormat: "%%amount%% د.ت",
+      decimal: 2,
+    },
+    IMP: {
+      currency: "IMP",
+      symbol: "£",
+      moneyFormat: "£ %%amount%% IMP",
+      decimal: 2,
+    },
+    XDR: {
+      currency: "XDR",
+      symbol: "XDR",
+      moneyFormat: "%%amount%% XDR",
+      decimal: 2,
+    },
+    XAU: {
+      currency: "XAU",
+      symbol: "XAU",
+      moneyFormat: "%%amount%% XAU",
+      decimal: 2,
+    },
+    BHD: {
+      currency: "BHD",
+      symbol: ".د.ب",
+      moneyFormat: "%%amount%% .د.ب",
+      decimal: 2,
+    },
+    CUC: {
+      currency: "CUC",
+      symbol: "CUC$",
+      moneyFormat: "CUC$ %%amount%%",
+      decimal: 2,
+    },
+    KWD: {
+      currency: "KWD",
+      symbol: "د.ك",
+      moneyFormat: "%%amount%% د.ك",
+      decimal: 2,
+    },
+    BYN: {
+      currency: "BYN",
+      symbol: "Br",
+      moneyFormat: "Br %%amount%%",
+      decimal: 2,
+    },
+    SYP: {
+      currency: "SYP",
+      symbol: "£S",
+      moneyFormat: "£S %%amount%%",
+      decimal: 0,
+    },
+    KPW: {
+      currency: "KPW",
+      symbol: "₩",
+      moneyFormat: "₩ %%amount%%",
+      decimal: 0,
+    },
+    JEP: {
+      currency: "JEP",
+      symbol: "£",
+      moneyFormat: "£ %%amount%% JEP",
+      decimal: 2,
+    },
+    IRR: {
+      currency: "IRR",
+      symbol: "﷼",
+      moneyFormat: "%%amount%% ﷼",
+      decimal: 0,
+    },
+    LYD: {
+      currency: "LYD",
+      symbol: "ل.د",
+      moneyFormat: "LYD %%amount%% ل.د",
+      decimal: 2,
+    },
+    MRU: {
+      currency: "MRU",
+      symbol: "UM",
+      moneyFormat: "UM %%amount%%",
+      decimal: 0,
+    },
+    MRO: {
+      currency: "MRO",
+      symbol: "UM",
+      moneyFormat: "UM %%amount%%",
+      decimal: 0,
+    },
+    SDG: {
+      currency: "SDG",
+      symbol: "£SD",
+      moneyFormat: "£SD %%amount%%",
+      decimal: 0,
+    },
+    TMT: {
+      currency: "TMT",
+      symbol: "T",
+      moneyFormat: "T %%amount%% TMT",
+      decimal: 2,
+    },
+    IQD: {
+      currency: "IQD",
+      symbol: "T",
+      moneyFormat: "%%amount%% ع.د",
+      decimal: 0,
+    },
+    SOS: {
+      currency: "SOS",
+      symbol: "Sh.so.",
+      moneyFormat: "Sh.so.%%amount%%",
+      decimal: 0,
+    },
+    SVC: {
+      currency: "SVC",
+      symbol: "SVC",
+      moneyFormat: "%%amount%% SVC",
+      decimal: 2,
+    },
+    GHS: {
+      currency: "GHS",
+      symbol: "GH₵",
+      moneyFormat: "GH₵ %%amount%%",
+      decimal: 2,
+    },
+    CYP: {
+      currency: "CYP",
+      symbol: "£",
+      moneyFormat: "£ %%amount%% CYP",
+      decimal: 2,
+    },
+    MTL: {
+      currency: "MTL",
+      symbol: "Lm",
+      moneyFormat: "Lm %%amount%% MTL",
+      decimal: 2,
+    },
+    SIT: {
+      currency: "SIT",
+      symbol: "SIT",
+      moneyFormat: "%%amount%% SIT",
+      decimal: 2,
+    },
+    VEB: {
+      currency: "VEB",
+      symbol: "Bs",
+      moneyFormat: "Bs %%amount%% VEB",
+      decimal: 0,
+    },
+    BYR: {
+      currency: "BYR",
+      symbol: "BYR",
+      moneyFormat: "%%amount%% BYR",
+      decimal: 0,
+    },
+    TMM: {
+      currency: "TMM",
+      symbol: "TMM",
+      moneyFormat: "%%amount%% TMM",
+      decimal: 0,
+    },
+    ZMK: {
+      currency: "ZMK",
+      symbol: "ZMK",
+      moneyFormat: "%%amount%% ZMK",
+      decimal: 0,
+    },
+    XBT: {
+      currency: "XBT",
+      symbol: "XBT",
+      moneyFormat: "%%amount%% XBT",
+      decimal: 2,
+    },
+    NTD: {
+      currency: "NTD",
+      symbol: "NTD",
+      moneyFormat: "%%amount%% NTD",
+      decimal: 0,
+    },
+    CNH: {
+      currency: "CNH",
+      symbol: "CNH",
+      moneyFormat: "%%amount%% CNH",
+      decimal: 2,
+    },
+    STN: {
+      currency: "STN",
+      symbol: "STN",
+      moneyFormat: "%%amount%% STN",
+      decimal: 2,
+    },
+    VES: {
+      currency: "VES",
+      symbol: "VES",
+      moneyFormat: "%%amount%% VES",
+      decimal: 0,
+    },
+    MXV: {
+      currency: "MXV",
+      symbol: "MXV",
+      moneyFormat: "%%amount%% MXV",
+      decimal: 2,
+    },
+  };
+  let rec_shop, rec_source, rec_email, rec_from, rec_contract_id, sro_email;
+  var Shopify = Shopify || {};
+
+  var mainElement =
+    `<div class="page-width ws-subscription">
+    <div class="grid">
+        <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+            <div class="rte">
+                <div class="head-title" id="head-title-id"><label>` +
+    language_Settings.portalHeadTitle +
+    `</label></div>
+                <div class="recurring-content">
+                    <div class="orders" id="subscriptioList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`;
+
+  handleCss();
+  setData();
+
+  function addCssToHead(style, id) {
+    let avail = document.getElementById(id);
+    if (avail) avail.remove();
+    document.head.insertAdjacentHTML("beforeend", style);
+  }
+
+  function setData() {
+    getUrlParam();
+    if (rec_from && rec_from == "webapp") {
+      const settingPromise = new Promise((resolve, reject) => {
+        resolve(getPortalSettings());
+      });
+      return mainElement;
+    } else {
+      const settingPromise = new Promise((resolve, reject) => {
+        resolve(getPortalSettings());
+      });
+      settingPromise.then(() => {
+        //             if (document.getElementsByTagName("main")[0]) {
+        //                 document.getElementsByTagName("main")[0].innerHTML = getMainStoreElement();
+        //             }
+        if (document.getElementById("head-title")) {
+          document.getElementById("head-title").innerHTML =
+            language_Settings.portalHeadTitle;
+        }
+        if (document.getElementById("head-sub-title")) {
+          document.getElementById("head-sub-title").innerHTML =
+            language_Settings.portalSubTitle;
+        }
+        if (document.getElementById("sro_getOtpBtn")) {
+          document.getElementById("sro_getOtpBtn").innerHTML =
+            language_Settings.getOTP;
+        }
+        if (document.getElementById("email_error")) {
+          document.getElementById("email_error").innerHTML =
+            language_Settings.errorMassage;
+        }
+        checkAndGetContracts();
+      });
+    }
+  }
+
+  function checkAndGetContracts() {
+    if (rec_contract_id == "1724317865") {
+      document.getElementById("preview-text").style.display = "block";
+      hideEntryForm();
+      getContracts("rahul@webrexstudio.com");
+    } else {
+      if (
+        (rec_source && rec_source.toLowerCase() == "webrex") ||
+        (rec_source && rec_source.toLowerCase() == "email")
+      ) {
+        hideEntryForm();
+        getContracts(rec_email);
+      } else if (rec_email) {
+        document.getElementById("customer_email").value = rec_email;
+        // this.getSubscriptionContracts();
+      }
+    }
+  }
+
+  function getUrlParam() {
+    //Get and set data from params
+    const urlParams = new URLSearchParams(location.search);
+    rec_source = urlParams.get("source");
+    rec_shop = urlParams.get("shop");
+    rec_email = urlParams.get("email");
+    rec_from = urlParams.get("jsfrom");
+    rec_contract_id = urlParams.get("cid");
+    if (rec_contract_id == "1724317865") {
+      rec_shop = "recurring-payment.myshopify.com";
+    } else {
+      rec_shop = rec_shop ? rec_shop : Shopify.shop;
+    }
+  }
+
+  function hideEntryForm() {
+    let rec_entry_form = document.getElementById("rec_entry_form");
+
+    if (rec_entry_form) {
+      rec_entry_form.style.display = "none";
+    }
+  }
+
+  function getMainStoreElement() {
+    return (
+      `<div class="page-width ws-subscription">
+    <div class="grid">
+        <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+            <div class="rte">
+                <div class="head-title" id="head-title-id"><label>` +
+      language_Settings.portalHeadTitle +
+      `</label></div>
+                <div class="preview-text" id="preview-text">
+  					<p>This is just a <b>preview</b> subscription contract that shows how customer will see their own subscription contracts. They can <b>Pause</b>, <b>Cancel</b> and <b>Skip</b> orders as per their requirements.</p>
+  				</div>
+				<div class="recurring-content">
+                    <div class="form" id="rec_entry_form">
+                        <div class="input input-with-icon"><label>` +
+      language_Settings.portalSubTitle +
+      `</label>
+                            <input name="customer_email" id="customer_email" type="email" />
+                             <span class="error" id="email_error">` +
+      language_Settings.errorMassage +
+      `</span>
+                            <input class="otp-input" name="sro_otp" id="sro_otp" type="text" placeholder="OTP" />
+                            <span class="error" id="otp_error">OTP did not match!</span>
+                        </div>
+                        <div class="buttons" id="ws-btn-group">
+                            <button class="btn subBtn otp-btn" id="sro_getOtpBtn" onclick="getOTP()">` +
+      language_Settings.getOTP +
+      `</button>
+                        </div>
+                    </div>
+                    <div class="orders" id="subscriptioList"></div>
+                    <div class="loader" id="loading">
+                        <svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100"
+                            enable-background="new 0 0 0 0" xml:space="preserve">
+                            <circle fill="#000" stroke="none" cx="6" cy="50" r="6">
+                                <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite"
+                                    begin="0.1"></animate>
+                            </circle>
+                            <circle fill="#000" stroke="none" cx="26" cy="50" r="6">
+                                <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite"
+                                    begin="0.2"></animate>
+                            </circle>
+                            <circle fill="#000" stroke="none" cx="46" cy="50" r="6">
+                                <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite"
+                                    begin="0.3"></animate>
+                            </circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>`
+    );
+  }
+
+  function createSubmitBtn() {
+    let tmpSubmitBtn = document.createElement("button");
+    tmpSubmitBtn.innerText = language_Settings.submitButton;
+    tmpSubmitBtn.classList.add("btn", "subBtn");
+    //     tmpSubmitBtn.setAttribute("disabled", true);
+    tmpSubmitBtn.setAttribute("id", "sro_submit");
+    tmpSubmitBtn.addEventListener("click", function () {
+      getSubscriptionContracts();
+    });
+    return tmpSubmitBtn;
+  }
+
+  function getPortalSettings() {
+    try {
+      if (rec_shop) {
+        return new Promise(function (resolve, reject) {
+          let xmlHttp = new XMLHttpRequest();
+          xmlHttp.open(
+            "get",
+            rec_wsApiUrl + "/getPortalSettings?shopUrl=" + rec_shop,
+            true
+          );
+          xmlHttp.setRequestHeader("Content-Type", "application/json");
+          xmlHttp.onreadystatechange = function () {
+            try {
+              if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                let response = JSON.parse(xmlHttp.responseText);
+                portal_Settings = response.data.settings.customerPortal;
+                customCss = portal_Settings.customCss
+                  ? portal_Settings.customCss
+                  : "";
+                language_Settings = response.data.language
+                  ? { ...language_Settings, ...response.data.language }
+                  : language_Settings;
+                rec_brand_color = response.data.settings.brandColor
+                  ? response.data.settings.brandColor
+                  : rec_brand_color;
+                resolve(handleCss(portal_Settings));
+              }
+            } catch (error) {
+              console.log("Error:httpGetAsync-", error);
+            }
+          };
+          xmlHttp.send();
+        });
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  function getOTP() {
+    try {
+      document.getElementById("loading").classList.add("active");
+      let emailErr = document.getElementById("email_error");
+      let email = document.getElementById("customer_email").value;
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open(
+        "get",
+        rec_wsApiUrl + "/sendOTP?email=" + email + "&shopUrl=" + rec_shop,
+        true
+      );
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.onreadystatechange = function () {
+        try {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            let res = JSON.parse(xmlHttp.responseText);
+            if (res.data.otp) {
+              createCookie("sro_otp", res.data.otp, 10);
+              document.getElementById("sro_getOtpBtn").style.display = "none";
+
+              let btnsContainer = document.getElementById("ws-btn-group");
+              if (btnsContainer) btnsContainer.appendChild(createSubmitBtn());
+
+              document.getElementById("loading").classList.remove("active");
+              document.getElementById("sro_otp").classList.add("active");
+              emailErr.classList.remove("active");
+              return true;
+            } else {
+              document.getElementById("loading").classList.remove("active");
+              emailErr.classList.add("active");
+              return false;
+            }
+          }
+        } catch (error) {
+          console.log("Error:httpGetAsync-", error);
+        }
+      };
+      xmlHttp.send();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function getContracts(email) {
+    try {
+      console.log(email)
+      return new Promise(function (resolve, reject) {
+        if (document.getElementById("loading")) {
+          document.getElementById("loading").classList.add("active");
+        }
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open(
+          "get",
+          rec_wsApiUrl +
+            "/getSubscriptionContract?email=" +
+            email +
+            "&shop=" +
+            rec_shop,
+          true
+        );
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.onreadystatechange = function () {
+          try {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+              if (document.getElementById("loading")) {
+                document.getElementById("loading").classList.remove("active");
+              }
+              sar_api_data = JSON.parse(xmlHttp.responseText);
+              resolve(appendContracts(sar_api_data));
+            }
+          } catch (error) {
+            console.log("Error:httpGetAsync-", error);
+          }
+        };
+        xmlHttp.send();
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function getSubscriptionContracts() {
+    try {
+      console.log(rec_email,'rec_email')
+      return new Promise(function (resolve, reject) {
+        if (
+          (rec_source && rec_source.toLowerCase() == "webrex") ||
+          (rec_source && rec_source.toLowerCase() == "email")
+        ) {
+          hideEntryForm();
+          resolve(getContracts(rec_email));
+        } else {
+          console.log('eeeeee')
+          console.log(sro_email,'sro_email')
+          if (typeof sro_email === 'undefined') {
+           sro_email = document.getElementById("customer_email").value;
+             let sro_otp = document.getElementById("sro_otp").value;
+          }
+         
+          if (validateOTP()) {
+            hideEntryForm();
+            resolve(getContracts(sro_email));
+          }
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function appendContracts(data) {
+    let i = 0;
+    let contractUl = document.createElement("ul");
+
+    if (data.data.length === 0) {
+      contractUl.innerHTML =
+        '<p class="no-orders">You have not subscribe any product.<p>';
+    }
+    let subscriptionContracts = data.data;
+    if (rec_contract_id && rec_contract_id != "") {
+      subscriptionContracts = data.data.filter(
+        (e) => e.subscriptionContractId == rec_contract_id
+      );
+      i = data.data.findIndex((item, i) => {
+        return item.subscriptionContractId === rec_contract_id;
+      });
+    }
+
+    for (let contract of subscriptionContracts) {
+      let contractLi = document.createElement("li");
+      let buttons = "";
+
+      let totalPrice = contract.subscriptionData.lines.edges.reduce(function (
+        acc,
+        val
+      ) {
+        return acc + Number(val.node.currentPrice.amount);
+      },
+      0);
+      let totalTaxPrice = 0;
+
+      if (
+        contract.subscriptionData.originOrder &&
+        contract.subscriptionData.originOrder.lineItems
+      ) {
+        // if (contract.subscriptionData.lines.edges.length === contract.subscriptionData.originOrder.lineItems.edges.length) {
+        //     totalPrice = Number(contract.subscriptionData.originOrder.currentSubtotalPriceSet.presentmentMoney.amount) + Number(contract.subscriptionData.originOrder.currentTotalTaxSet.presentmentMoney.amount)
+        //     totalTaxPrice = Number(contract.subscriptionData.originOrder.currentTotalTaxSet.presentmentMoney.amount)
+        // } else {
+        totalPrice = 0;
+        totalTaxPrice = Number(
+          contract.subscriptionData.originOrder.currentTotalTaxSet
+            .presentmentMoney.amount
+        );
+        let lineItemList = contract.subscriptionData.lines.edges.map((edge) => {
+          return (
+            edge.node.variantId.split("/").pop() + edge.node.currentPrice.amount
+          );
+        });
+        for (let j = 0; j < contract.subscriptionData.lines.edges.length; j++) {
+          let edge = contract.subscriptionData.lines.edges[j];
+          let taxes =
+            edge.node.taxLines && edge.node.taxLines.length > 0
+              ? edge.node.taxLines.map((tax) => {
+                  return tax.priceSet.presentmentMoney.amount;
+                })
+              : [];
+          if (taxes.length > 0) {
+            totalPrice =
+              totalPrice +
+              Number(edge.node.lineDiscountedPrice.amount) +
+              Number(
+                taxes.reduce(function (acc, current) {
+                  return acc + Number(current);
+                })
+              );
+            totalTaxPrice += Number(
+              taxes.reduce(function (acc, current) {
+                return acc + Number(current);
+              })
+            );
+          } else {
+            totalPrice =
+              totalPrice + Number(edge.node.lineDiscountedPrice.amount);
+          }
+
+          let lineItemIndex = lineItemList.indexOf(
+            edge.node.variantId.split("/").pop() +
+              edge.node.lineDiscountedPrice.amount
+          );
+          lineItemList.splice(lineItemIndex, 1);
+        }
+        totalTaxPrice = Number(
+          contract.subscriptionData.originOrder.currentTotalTaxSet
+            .presentmentMoney.amount
+        );
+        totalPrice += totalTaxPrice;
+        // }
+        //           	else {
+
+        //                 totalPrice = 0
+        //                 let lineItemList = contract.subscriptionData.lines.edges.map((edge) => {
+        //                     return edge.node.variantId.split('/').pop() + edge.node.currentPrice.amount
+        //                 })
+
+        //                 for (let j = 0; j < contract.subscriptionData.originOrder.lineItems.edges.length; j++) {
+        //                     let edge = contract.subscriptionData.originOrder.lineItems.edges[j]
+        //                     if (edge.node.variant && lineItemList.indexOf(edge.node.variant.id.split('/').pop() + edge.node.discountedTotalSet.presentmentMoney.amount) !== -1) {
+
+        //                         let taxes = edge.node.taxLines.length > 0 ? edge.node.taxLines.map((tax) => {
+        //                             return tax.priceSet.presentmentMoney.amount
+        //                         }) : []
+        //                         if (taxes.length > 0) {
+        //                             totalPrice = totalPrice + Number(edge.node.discountedTotalSet.presentmentMoney.amount) + Number(taxes.reduce((function (acc, current) { return acc + Number(current) })))
+        //                             totalTaxPrice += Number(taxes.reduce((function (acc, current) { return acc + Number(current) })))
+        //                         } else {
+        //                             totalPrice = totalPrice + Number(edge.node.discountedTotalSet.presentmentMoney.amount)
+        //                             totalTaxPrice += 0;
+        //                         }
+
+        //                         let lineItemIndex = lineItemList.indexOf(edge.node.variant.id.split('/').pop() + edge.node.discountedTotalSet.presentmentMoney.amount)
+        //                         lineItemList.splice(lineItemIndex, 1)
+        //                     }
+        //                 }
+        //             }
+      }
+      totalPrice =
+        totalPrice + Number(contract.subscriptionData.deliveryPrice.amount);
+      contract.subscriptionData.totalPrice = totalPrice;
+      contract.subscriptionData.totalTaxPrice = totalTaxPrice;
+
+      if (
+        contract.subscriptionData.status != "CANCELLED" &&
+        ((rec_from && rec_from == "webapp") ||
+          portal_Settings.cancelSubscription)
+      ) {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'cancel', ` +
+          i +
+          `)">  ` +
+          language_Settings.cancelSubBtn +
+          ` </button>`;
+      }
+      if (contract.subscriptionData.status != "ACTIVE") {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'active', ` +
+          i +
+          `)"> ` +
+          language_Settings.activeSubBtn +
+          ` </button>`;
+      }
+      if (
+        contract.subscriptionData.status != "PAUSED" &&
+        ((rec_from && rec_from == "webapp") || portal_Settings.pauseResume)
+      ) {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'pause', ` +
+          i +
+          `)"> ` +
+          language_Settings.pauseSubBtn +
+          ` </button>`;
+      }
+      let statusClass =
+        contract.subscriptionData.status == "ACTIVE" ? "active" : "inactive";
+      let orderBg = portal_Settings.listBackgroundColor
+        ? portal_Settings.listBackgroundColor
+        : "#f9f7f7";
+      let statusLabel =
+        contract.subscriptionData.status == "ACTIVE"
+          ? language_Settings.statusActive
+          : contract.subscriptionData.status == "CANCELLED"
+          ? language_Settings.statusCancel
+          : language_Settings.statusPause;
+
+      let cProducts = "";
+      contract.subscriptionData.lines.edges.forEach((element) => {
+        cProducts +=
+          `<div class="product">
+                <div class="img">
+                ` +
+          productImg(element) +
+          `
+                </div>
+                <div class="left-content">
+                    <div class="label name-label">
+                        <label for="">` +
+          element.node.title +
+          ` - ` +
+          getPrice(
+            parseFloat(element.node.currentPrice.amount),
+            element.node.currentPrice.currencyCode
+          ) +
+          `</label>
+                        <div class="variant">(` +
+          element.node.variantTitle +
+          `)</div>
+                    </div>
+                </div>                                          
+            </div>`;
+      });
+
+      let ModifyBillingFrequency =
+        (rec_from && rec_from == "webapp") ||
+        portal_Settings.ModifyBillingFrequency
+          ? `<div class="icon" onclick="getEditFrequencyForm(` +
+            i +
+            `)">
+                                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                                                  	</div>`
+          : ``;
+      let addProductBtn =
+        (rec_from && rec_from == "webapp") || portal_Settings.AddProduct
+          ? `<button class="btn-link" onclick="getSearchProductForm(` +
+            i +
+            `)">` +
+            language_Settings.addProductBtn +
+            `</button>`
+          : ``;
+      let ModifyNextBillingDate =
+        (rec_from && rec_from == "webapp") ||
+        portal_Settings.ModifyNextBillingDate
+          ? `<div class="icon" onclick="getEditNextBillingForm(` +
+            i +
+            `)">
+                                                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+                                                            </div>`
+          : ``;
+
+      contractLi.innerHTML =
+        `<div class="order" style="background: ` +
+        orderBg +
+        `">
+                                        <div class="top">
+                                            <div class="left">
+												<div class="products">
+                                                ` +
+        cProducts +
+        `
+												</div>
+												<div class="link-btn">
+  												` +
+        addProductBtn +
+        `
+  												</div>
+                                            </div>
+                                            <div class="right">
+                                                <div class="label">
+                                                    <label for=""> ` +
+        language_Settings.billingLabel +
+        `: ` +
+        language_Settings.everyLabel +
+        ` ` +
+        contract.subscriptionData.billingPolicy.intervalCount +
+        ` ` +
+        contract.subscriptionData.billingPolicy.interval +
+        ` </label>
+													` +
+        ModifyBillingFrequency +
+        `
+                                                </div>
+                                                <div class="label ` +
+        statusClass +
+        `">
+                                                    <span class="status">` +
+        statusLabel +
+        `</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="bottom">
+                                            <div class="left">
+                                                <div class="label">
+                                                    <label for="">` +
+        language_Settings.totalLabel +
+        `: ` +
+        getPrice(
+          parseFloat(contract.subscriptionData.totalPrice),
+          contract.subscriptionData.deliveryPrice.currencyCode
+        ) +
+        `</label>
+                                                </div>
+                                                <div class="next-billing">
+                                                    <div class="label">
+                                                        <label for="">` +
+        language_Settings.billingSchedule +
+        `: ` +
+        new Date(contract.subscriptionData.nextBillingDate).toLocaleDateString(
+          "en-US"
+        ) +
+        `</label>
+															` +
+        ModifyNextBillingDate +
+        `
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="right">
+                                                <div class="buttons">
+                                                    <button class="btn plus show-hide" id="plus` +
+        i +
+        `" onclick="showFullContract(` +
+        i +
+        `)">` +
+        language_Settings.showDetailBtn +
+        `</button>
+                                                    <button class="btn minus show-hide" id="minus` +
+        i +
+        `" onclick="closeViewOrderPopup(` +
+        i +
+        `)">` +
+        language_Settings.hideDetailBtn +
+        `</button>
+													
+  												</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                <div id="contractDetail` +
+        i +
+        `" class="contract-detail"></div>`;
+      contractUl.appendChild(contractLi);
+      i++;
+    }
+    document.getElementById("subscriptioList").innerHTML = "";
+    document.getElementById("subscriptioList").appendChild(contractUl);
+
+    if (subscriptionContracts.length == 1) {
+      let cIndex = data.data.findIndex((item, i) => {
+        return item.subscriptionContractId === rec_contract_id;
+      });
+      if (cIndex == -1) {
+        await showFullContract(i - 1);
+      } else {
+        await showFullContract(cIndex);
+      }
+    } else {
+      let elements = document.getElementsByClassName("plus");
+      for (var j = 0; j < elements.length; j++) {
+        elements[j].classList.add("active");
+      }
+    }
+  }
+
+  function productImg(product) {
+    let tmpSrc =
+      product.node.variantImage && product.node.variantImage.originalSrc
+        ? product.node.variantImage.originalSrc
+        : "https://recurring-payment.webrexstudio.com/app/assets/no-image.png";
+    let imgList = '<img src="' + tmpSrc + '" alt="">';
+    // if (contract.subscriptionData.lines.edges.length === 1) {
+    //     let tmpSrc = contract.subscriptionData.lines.edges[0].node.variantImage && contract.subscriptionData.lines.edges[0].node.variantImage.originalSrc ? contract.subscriptionData.lines.edges[0].node.variantImage.originalSrc : "https://recurring-payment.webrexstudio.com/app/assets/no-image.png";
+    //     imgList = '<img src="' + tmpSrc + '" alt="">';
+    // } else {
+    //     for (let i = 0; i < contract.subscriptionData.lines.edges.length; i++) {
+    //         let tmpSrc = contract.subscriptionData.lines.edges[i].node.variantImage && contract.subscriptionData.lines.edges[0].node.variantImage.originalSrc ? contract.subscriptionData.lines.edges[i].node.variantImage.originalSrc : "https://recurring-payment.webrexstudio.com/app/assets/no-image.png";
+    //         imgList += '<img class="multi-img" src="' + tmpSrc + '" alt="">';
+    //     }
+    // }
+    return imgList;
+  }
+
+  function productName(contract) {
+    let productList = "";
+    for (let i = 0; i < contract.subscriptionData.lines.edges.length; i++) {
+      productList += contract.subscriptionData.lines.edges[i].node.title;
+    }
+    return productList;
+  }
+
+  function updateContract(contractId, action, index) {
+    try {
+      let payload = {
+        subscription_contract_id: contractId,
+        action: action,
+        shopUrl: rec_shop,
+      };
+      document.getElementById("loadingBtn" + index).classList.add("active");
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("post", rec_wsApiUrl + "/subscriptionContract");
+      //       xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.onreadystatechange = async function () {
+        try {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            await getSubscriptionContracts();
+            await showFullContract(index);
+            //                     document.getElementById("plus"+index).click();
+
+            document
+              .getElementById("loadingBtn" + index)
+              .classList.remove("active");
+            closeCommonDialogue();
+          }
+          if (xmlHttp.status == 500) {
+            throw {
+              err: "updateContract api call error",
+              status: xmlHttp.status,
+            };
+          }
+        } catch (error) {
+          console.log("Error:httpGetAsync-", error);
+          document
+            .getElementById("loadingBtn" + index)
+            .classList.remove("active");
+        }
+      };
+      xmlHttp.send(JSON.stringify(payload));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function showFullContract(index) {
+    let contract = sar_api_data.data[index];
+    selectedContract = contract.subscriptionContractId;
+    sar_customer_data = contract.subscriptionData.customer;
+    sar_payment_method_id = contract.subscriptionData.customerPaymentMethod.id;
+    activeTab = "subcriptionDetail" + index;
+    let wsShippingAddressForm = generateShippingAddressForm(contract);
+    let wsStatusForm = generateStatusForm(contract, index);
+
+    let contractProducts = ``;
+    contract.subscriptionData.lines.edges.forEach((element, i) => {
+      let modifyProduct =
+        (rec_from && rec_from == "webapp") || portal_Settings.ModifyProduct
+          ? `<div class="icon" onclick="getEditProductForm(` +
+            i +
+            `, ` +
+            index +
+            `)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                        </div>`
+          : ``;
+
+      let priceHtml =
+        `<div class="price">
+							<label for="">` +
+        getPrice(
+          parseFloat(element.node.currentPrice.amount),
+          element.node.currentPrice.currencyCode
+        ) +
+        `</label>
+                        ` +
+        modifyProduct +
+        `
+                    </div>`;
+      if (contract.subscriptionData.lines.edges.length > 1) {
+        let RemoveProduct =
+          (rec_from && rec_from == "webapp") || portal_Settings.RemoveProduct
+            ? `<div class="icon" onclick="getDeleteProductForm(` +
+              i +
+              `, ` +
+              index +
+              `)">
+  							<svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="24.000000pt" height="24.000000pt" viewBox="0 0 24.000000 24.000000" preserveAspectRatio="xMidYMid meet">
+                              <g transform="translate(0.000000,24.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+                              <path d="M74 225 c-4 -8 -17 -15 -30 -15 -13 0 -24 -3 -23 -7 0 -5 6 -51 12 -103 l13 -95 74 0 74 0 13 95 c6 52 12 98 12 103 1 4 -10 7 -23 7 -13 0 -26 7 -30 15 -3 10 -19 15 -46 15 -27 0 -43 -5 -46 -15z m76 -5 c0 -5 -13 -10 -30 -10 -16 0 -30 5 -30 10 0 6 14 10 30 10 17 0 30 -4 30 -10z m55 -30 c-8 -13 -162 -13 -170 0 -4 6 27 10 85 10 58 0 89 -4 85 -10z m-12 -77 c-7 -105 -5 -103 -73 -103 -68 0 -66 -2 -73 103 l-4 57 77 0 77 0 -4 -57z"/>
+                              <path d="M71 118 c1 -18 5 -46 9 -63 6 -25 8 -20 9 27 0 31 -3 60 -9 63 -6 4 -10 -7 -9 -27z"/>
+                              <path d="M110 90 c0 -33 4 -60 10 -60 6 0 10 27 10 60 0 33 -4 60 -10 60 -6 0 -10 -27 -10 -60z"/>
+                              <path d="M158 144 c-5 -4 -8 -32 -7 -63 l1 -56 9 40 c11 44 8 91 -3 79z"/>
+                              </g>
+                              </svg>
+  						</div>`
+            : ``;
+
+        priceHtml =
+          `<div class="price">
+					<div class="product-action">
+                      <label for="">` +
+          getPrice(
+            parseFloat(element.node.currentPrice.amount),
+            element.node.currentPrice.currencyCode
+          ) +
+          `</label>
+					   ` +
+          RemoveProduct +
+          `
+  					</div>
+					` +
+          modifyProduct +
+          `
+                </div>`;
+      }
+
+      contractProducts +=
+        `<div class="products">
+                <div class="product">
+                    <div class="image">
+                    ` +
+        productImg(element) +
+        `
+                    </div>
+                    <div class="name">
+                        <label for="">` +
+        element.node.title +
+        ` </label>
+<div class="variant">(` +
+        element.node.variantTitle +
+        `) (Qty: ` +
+        element.node.quantity +
+        `)</div>
+                    </div>
+                </div>
+                ` +
+        priceHtml +
+        `
+            </div>`;
+    });
+
+    let contractDetailDiv = await getContractDetailDiv(
+      contract,
+      index,
+      contractProducts,
+      wsShippingAddressForm,
+      wsStatusForm
+    );
+    document.getElementById("contractDetail" + index).innerHTML = "";
+    document
+      .getElementById("contractDetail" + index)
+      .appendChild(contractDetailDiv);
+
+    document.getElementById("plus" + index).classList.remove("active");
+    document.getElementById("contractDetail" + index).classList.add("active");
+    document.getElementById("minus" + index).classList.add("active");
+    document.getElementById(activeTab).classList.add("active");
+
+    if (rec_contract_id == "1724317865") {
+      disableActionsForPreview();
+    }
+
+    document
+      .getElementById("statusUpdate")
+      .addEventListener("click", function () {
+        openCommonDialogue(
+          language_Settings.updateStatusModelTitle,
+          wsStatusForm.html,
+          wsStatusForm.footer,
+          contract.subscriptionContractId
+        );
+      });
+  }
+
+  async function getSearchProductForm(contractIndex) {
+    let contract = sar_api_data.data[contractIndex];
+    let wsProductSearchForm = generateSearchProductForm(
+      contract,
+      contractIndex
+    );
+    openCommonDialogue(
+      language_Settings.searchProductModelTitle,
+      wsProductSearchForm.html,
+      wsProductSearchForm.footer,
+      contract.subscriptionContractId
+    );
+  }
+
+  async function getEditProductForm(lineIndex, contractIndex) {
+    try {
+      document
+        .getElementById("detailLoader" + contractIndex)
+        .classList.add("active");
+      let contract = sar_api_data.data[contractIndex];
+      let product = contract.subscriptionData.lines.edges[lineIndex].node;
+
+      let promise = [
+        httpGetAsync(
+          rec_wsApiUrl +
+            "/contractProduct?shopUrl=" +
+            rec_shop +
+            "&pid=" +
+            product.productId,
+          "GET",
+          null
+        ),
+      ];
+      await Promise.all(promise)
+        .then(async (res) => {
+          document
+            .getElementById("detailLoader" + contractIndex)
+            .classList.remove("active");
+          let wsProductEditForm = generateProductEditForm(
+            contract,
+            contractIndex,
+            product,
+            lineIndex,
+            res[0]
+          );
+          openCommonDialogue(
+            language_Settings.modifyProductModelTitle,
+            wsProductEditForm.html,
+            wsProductEditForm.footer,
+            contract.subscriptionContractId
+          );
+        })
+        .catch(function (err) {
+          document
+            .getElementById("detailLoader" + contractIndex)
+            .classList.remove("active");
+          throw err;
+        });
+    } catch (error) {
+      console.log("Error:SelfInvoking-", error);
+    }
+  }
+
+  async function getEditCustomerDataForm( contractIndex) {
+    try {
+        document.getElementById("detailLoader" + contractIndex).classList.add("active");
+        let contract = sar_api_data.data[contractIndex];
+        let customer = contract.subscriptionData.customer;
+            document.getElementById("detailLoader" + contractIndex).classList.remove("active");
+            let customerDataForm = generateCustomerDataEditForm(contract, contractIndex, customer);
+            openCommonDialogue(language_Settings.modifyCustomerDataTitle, customerDataForm.html, customerDataForm.footer, contract.subscriptionContractId);
+    } catch (error) {
+        console.log("Error:SelfInvoking-", error);
+    }
+}
+  
+  async function getDeleteProductForm(lineIndex, contractIndex) {
+    let contract = sar_api_data.data[contractIndex];
+    let wsProductRemoveForm = generateDeleteProductForm(
+      contract,
+      contractIndex,
+      lineIndex
+    );
+    openCommonDialogue(
+      language_Settings.removeProductModelTitle,
+      wsProductRemoveForm.html,
+      wsProductRemoveForm.footer,
+      contract.subscriptionContractId
+    );
+  }
+
+  async function getEditNextBillingForm(contractIndex) {
+    let contract = sar_api_data.data[contractIndex];
+    let wsFrequencyEditForm = generateEditNextBillingForm(
+      contract,
+      contractIndex
+    );
+    openCommonDialogue(
+      language_Settings.editNextBillingModelTitle,
+      wsFrequencyEditForm.html,
+      wsFrequencyEditForm.footer,
+      contract.subscriptionContractId
+    );
+  }
+
+  function getEditFrequencyForm(contractIndex) {
+    let contract = sar_api_data.data[contractIndex];
+    let wsFrequencyEditForm = generateEditFrequencyForm(
+      contract,
+      contractIndex
+    );
+    openCommonDialogue(
+      language_Settings.editFrequencyModelTitle,
+      wsFrequencyEditForm.html,
+      wsFrequencyEditForm.footer,
+      contract.subscriptionContractId
+    );
+  }
+
+  async function getContractDetailDiv(
+    contract,
+    index,
+    contractProducts,
+    wsShippingAddressForm,
+    wsStatusForm
+  ) {
+    let contractDetailDiv = document.createElement("div");
+    contractDetailDiv.classList.add("subscription");
+    let modifyshippingDetails =
+      (rec_from && rec_from == "webapp") || portal_Settings.editShipping
+        ? ` <div class="icon" onclick='openCommonDialogue("` +
+          language_Settings.shippingAddressModelTitle +
+          `", \`` +
+          wsShippingAddressForm.html +
+          `\` , \`` +
+          wsShippingAddressForm.footer +
+          `\`, ` +
+          contract.subscriptionContractId +
+          `)'>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                                                            </div>`
+        : ``;
+      let modifyCustomerData =
+      (rec_from && rec_from == "webapp") || portal_Settings.editCustomerData? `<div class="icon subBtn" onclick="getEditCustomerDataForm( ` + index + `)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"></path><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"></polygon></svg>
+                                                            </div>
+                                                        </div>
+                                                        <div class="detail">
+                                                            <div>`:``
+    let taxPrice = contract.subscriptionData.originOrder.currentTotalTaxSet
+      .presentmentMoney
+      ? contract.subscriptionData.originOrder.currentTotalTaxSet
+          .presentmentMoney
+      : {
+          amount: "0.00",
+          currencyCode: contract.subscriptionData.deliveryPrice.currencyCode,
+        };
+    let shippingDetails =
+      contract.subscriptionData.deliveryMethod &&
+      typeof contract.subscriptionData.deliveryMethod.address !== "undefined"
+        ? `
+                                                    <div class="shipping-details mb-15">
+                                                        <div class="title right-box">
+                                                            <label for="">` +
+          language_Settings.shippingTitle +
+          `</label>
+                                                             ` +
+          modifyshippingDetails +
+          `
+                                                        </div>
+                                                        <div class="detail">
+                                                            <div>` +
+          contract.subscriptionData.deliveryMethod.address.address1 +
+          ` ` +
+          contract.subscriptionData.deliveryMethod.address.address2 +
+          ` ` +
+          contract.subscriptionData.deliveryMethod.address.city +
+          ` ` +
+          contract.subscriptionData.deliveryMethod.address.province +
+          ` ` +
+          contract.subscriptionData.deliveryMethod.address.country +
+          ` ` +
+          contract.subscriptionData.deliveryMethod.address.zip +
+          `</div>
+                                                        </div>
+                                                    </div>
+                                                    `
+        : ``;
+
+    let paymentDetails = ``;
+    if (
+      contract.subscriptionData.customerPaymentMethod &&
+      contract.subscriptionData.customerPaymentMethod.instrument
+    ) {
+      paymentDetails =
+        `<div class="payment-method mb-15">
+                            <div class="title right-box">
+                            <label for="">` +
+        language_Settings.paymentTitle +
+        `</label>
+                            <div class="icon" id="edit_payment" onclick='editPaymentMethod()'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                              </div>
+                              </div>
+                            <div class="notify" id="notifyMail"> <p>` +
+        language_Settings.paymentMethodChange +
+        `</p></div>
+                            <div class="detail">
+                            <div>` +
+        contract.subscriptionData.customerPaymentMethod.instrument
+          .maskedNumber +
+        `</div>
+                            <div>` +
+        language_Settings.expiresOnLabel +
+        ` ` +
+        contract.subscriptionData.customerPaymentMethod.instrument.expiryMonth +
+        `/` +
+        contract.subscriptionData.customerPaymentMethod.instrument.expiryYear +
+        `</div>
+                              </div>
+                              </div>`;
+    }
+
+    contractDetailDiv.innerHTML = "";
+    contractDetailDiv.innerHTML =
+      `<div class="subscription">
+                                            <div class="order-tabs">
+                                                <p class="order-tab" id="subcriptionDetail` +
+      index +
+      `"
+                                                    onclick="tabActive('subcriptionDetail` +
+      index +
+      `', ` +
+      index +
+      `)"
+                                                    >` +
+      language_Settings.subscriptionDetailTab +
+      `
+                                                </p>
+                                                <p class="order-tab" id="upcoming` +
+      index +
+      `"
+                                                    onclick="tabActive('upcoming` +
+      index +
+      `', ` +
+      index +
+      `)">` +
+      language_Settings.upcomingOrdersTab +
+      `</p>
+                                                <p class="order-tab" id="completed` +
+      index +
+      `"
+                                                    onclick="tabActive('completed` +
+      index +
+      `', ` +
+      index +
+      `, ` +
+      contract.subscriptionContractId +
+      `)">` +
+      language_Settings.completedOrdersTab +
+      `</p>
+                                            </div>
+
+                                        </div>
+                                        <div class="subscription-details rec-tab-content active" id="subscription-details` +
+      index +
+      `">
+                                            <div class="created">
+                                                <label for="">` +
+      language_Settings.subscriptionTitle +
+      ` ` +
+      language_Settings.createdAt +
+      `: </label>
+                                                <span>` +
+      new Date(contract.created).toLocaleDateString("en-US") +
+      `</span>
+                                            </div>
+                                            <div class="details">
+                                                <div class="left">
+                                                    <div class="top">
+                                                        <div class="title">
+                                                            <label for="">` +
+      language_Settings.productTitle +
+      `</label>
+                                                        </div>
+                                                        <div class="product-details">
+                                                        ` +
+      contractProducts +
+      `
+                                                        </div>
+                                                    </div>
+                                                    <div class="bottom">
+                                                        <div class="cost-detail">
+                                                            <div class="cost">
+                                                                <span>` +
+      language_Settings.shippingCostLabel +
+      `: </span>
+                                                                <span>` +
+      getPrice(
+        parseFloat(contract.subscriptionData.deliveryPrice.amount),
+        contract.subscriptionData.deliveryPrice.currencyCode
+      ) +
+      `</span>
+                                                            </div>
+                                                            <div class="cost">
+                                                                <span> ` +
+      language_Settings.taxLabel +
+      `: </span>
+                                                                <span>` +
+      getPrice(taxPrice.amount, taxPrice.currencyCode) +
+      `</span>
+                                                            </div>
+                                                            <div class="cost">
+                                                                <span>` +
+      language_Settings.totalLabel +
+      `: </span>
+                                                                <span>` +
+      getPrice(
+        parseFloat(contract.subscriptionData.totalPrice),
+        contract.subscriptionData.deliveryPrice.currencyCode
+      ) +
+      `</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="right">
+                                                    <div class="status right-box mb-15">
+                                                        <div class="label">
+                                                            <label for="">` +
+      language_Settings.statusLabel +
+      `:</label>
+                                                            <span class="detail">` +
+      contract.subscriptionData.status +
+      `</span>
+                                                        </div>
+                                                        <div class="icon" id="statusUpdate" >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24"><path d="M20 14.66V20a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h5.34"/><polygon points="18 2 22 6 12 16 8 16 8 12 18 2"/></svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="customer-details mb-15">
+                                                        <div class="title right-box">
+                                                            <label for="">` +
+      language_Settings.customerDetailTitle +
+      `</label>
+       ` + modifyCustomerData + `
+                                                        </div>
+                                                        <div class="detail">
+                                                            <div>` +
+      contract.subscriptionData.customer.displayName +
+      `</div>
+                                                            <div>` +
+      contract.subscriptionData.customer.email +
+      `</div>
+                                                        </div>
+                                                    </div>
+                                                    ` +
+      shippingDetails +
+      `
+                                                    ` +
+      paymentDetails +
+      `
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="upcoming-order rec-tab-content" id="upcoming-order` +
+      index +
+      `">
+                                            ` +
+      (await upcomingOrderList(contract, index)) +
+      `
+                                            
+                                        </div>
+                                        <div class="completed-order" id="completed-order` +
+      index +
+      `">
+                                            <div class="order-item rec-tab-content box" id="completedOrderData` +
+      index +
+      `">
+                                        </div>
+                                      </div>
+									<div>
+                                          <div class="loader loading-btn" id="detailLoader` +
+      index +
+      `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>
+                                    </div>`;
+
+    return contractDetailDiv;
+  }
+
+  function generateShippingAddressForm(contract) {
+    let shippingForm =
+      contract.subscriptionData.deliveryMethod &&
+      typeof contract.subscriptionData.deliveryMethod.address !== "undefined"
+        ? `<div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.address1 +
+          `</label>
+                                                                        <input type="text" name="address1" placeholder="` +
+          language_Settings.address1 +
+          `" value="` +
+          contract.subscriptionData.deliveryMethod.address.address1 +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.address2 +
+          `</label>
+                                                                        <input type="text" name="address2" placeholder="` +
+          language_Settings.address2 +
+          `" value="` +
+          contract.subscriptionData.deliveryMethod.address.address2 +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.city +
+          `</label>
+                                                                        <input type="text" name="city" placeholder="` +
+          language_Settings.city +
+          `" value="` +
+          contract.subscriptionData.deliveryMethod.address.city +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.zipcode +
+          `</label>
+                                                                        <input type="text" name="zipcode" placeholder="` +
+          language_Settings.zipcode +
+          `" value="` +
+          contract.subscriptionData.deliveryMethod.address.zip +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.provinceModelLabel +
+          `</label>
+                                                                        <input type="text" name="province" placeholder="` +
+          language_Settings.province +
+          `" value="` +
+          contract.subscriptionData.deliveryMethod.address.province +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.provinceCodeModelLabel +
+          ` </label>
+                                                                        <input type="text" name="provinceCode" placeholder="Province Code" value="` +
+          contract.subscriptionData.deliveryMethod.address.provinceCode +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.country +
+          `</label>
+                                                                        <input type="text" name="country" placeholder="` +
+          language_Settings.country +
+          `" value="` +
+          contract.subscriptionData.deliveryMethod.address.country +
+          `">
+                                                                    </div>
+                                                                    <div class="ws-input-group ws-input-2">
+                                                                        <label>` +
+          language_Settings.countryCodeModelLabel +
+          `</label>
+                                                                        <input type="text" name="countryCode" placeholder="Country Code" value="` +
+          contract.subscriptionData.deliveryMethod.address.countryCode +
+          `">
+                                                                    </div>
+
+                                                                    <div class="loader loading-btn" id="loadingDialouge` +
+          contract.subscriptionContractId +
+          `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>
+                                                                    `
+        : ``;
+    return {
+      html: shippingForm,
+      footer:
+        `<button type="submit" class="btn subBtn" onclick="updateShippingAddress(` +
+        contract.subscriptionContractId +
+        `)">` +
+        language_Settings.updateBtn +
+        `</button>`,
+    };
+  }
+
+  function generateStatusForm(contract, i) {
+    let buttons = "";
+    if (rec_from && rec_from == "webapp") {
+      if (contract.subscriptionData.status != "CANCELLED") {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'cancel', ` +
+          i +
+          `)">  ` +
+          language_Settings.cancelSubBtn +
+          ` </button>`;
+      }
+      if (contract.subscriptionData.status != "ACTIVE") {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'active', ` +
+          i +
+          `)"> ` +
+          language_Settings.activeSubBtn +
+          ` </button>`;
+      }
+      if (contract.subscriptionData.status != "PAUSED") {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'pause', ` +
+          i +
+          `)"> ` +
+          language_Settings.pauseSubBtn +
+          ` </button>`;
+      }
+    } else {
+      if (
+        contract.subscriptionData.status != "CANCELLED" &&
+        portal_Settings.cancelSubscription
+      ) {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'cancel', ` +
+          i +
+          `)">  ` +
+          language_Settings.cancelSubBtn +
+          ` </button>`;
+      }
+      if (contract.subscriptionData.status != "ACTIVE") {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'active', ` +
+          i +
+          `)"> ` +
+          language_Settings.activeSubBtn +
+          ` </button>`;
+      }
+      if (
+        contract.subscriptionData.status != "PAUSED" &&
+        portal_Settings.pauseResume
+      ) {
+        buttons +=
+          `<button class="btn subBtn custom-btn" onclick="updateContract(` +
+          contract.subscriptionContractId +
+          `, 'pause', ` +
+          i +
+          `)"> ` +
+          language_Settings.pauseSubBtn +
+          ` </button>`;
+      }
+    }
+
+    if (buttons == "") {
+      buttons += `<p style="color: #cd4343;">No permission to change subscription status</p>`;
+    }
+    return {
+      html:
+        `<div class='status-content'>
+                <div class='status-buttons' >
+                ` +
+        buttons +
+        `
+                </div>
+				<div class="loader loading-btn" id="loadingBtn` +
+        i +
+        `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>
+            </div>`,
+      footer: "",
+    };
+  }
+
+  function generateProductEditForm(
+    contract,
+    i,
+    currentProduct,
+    pIndex,
+    product
+  ) {
+    let selectOptions = ``;
+    product.data.variants.forEach((variant) => {
+      if (variant.admin_graphql_api_id == currentProduct.variantId) {
+        selectOptions +=
+          `<option value="` +
+          variant.admin_graphql_api_id +
+          `" selected="selected">` +
+          variant.title +
+          `</option>`;
+      } else {
+        selectOptions +=
+          `<option value="` +
+          variant.admin_graphql_api_id +
+          `">` +
+          variant.title +
+          `</option>`;
+      }
+    });
+    let productForm =
+      `<div class="ws-input-group ws-input-1">
+                      <label>` +
+      language_Settings.qtyModelLabel +
+      `</label>
+                      <input type="number" name="productQty" min="1" value="` +
+      currentProduct.quantity +
+      `">
+  					</div>
+					<div class="ws-input-group ws-input-1">
+                      <label>` +
+      language_Settings.variantModelLabel +
+      `</label>
+						<select name="variantId">
+                          ` +
+      selectOptions +
+      `
+                        </select>
+  					</div>
+					<div class="loader loading-btn" id="loadingDialouge` +
+      contract.subscriptionContractId +
+      `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>`;
+
+    return {
+      html: productForm,
+      footer:
+        `<button type="submit" class="btn subBtn" onclick="editProducts(` +
+        contract.subscriptionContractId +
+        `, ` +
+        pIndex +
+        `)">` +
+        language_Settings.updateBtn +
+        `</button>`,
+    };
+  }
+
+  function generateCustomerDataEditForm(contract, i, customer) {
+    let customerDataForm = `<div class="ws-input-group ws-input-1">
+                      <label>`+ language_Settings.firstNameLabel + `</label>
+                      <input type="text" name="firstName" placeholder="`+ language_Settings.firstName + `" value="` + customer.firstName + `">
+  					</div>
+                      <div class="ws-input-group ws-input-1">
+                      <label>`+ language_Settings.lastNameLabel + `</label>
+                      <input type="text" name="lastName" placeholder="`+ language_Settings.lastName + `" value="` + customer.lastName + `">
+  					</div>
+					<div class="ws-input-group ws-input-1">
+                      <label>`+ language_Settings.emailLabel + `</label>
+                      <input type="text" name="email" placeholder="`+ language_Settings.email + `" value="` + customer.email + `">
+  					</div>
+					<div class="loader loading-btn" id="loadingDialouge` + contract.subscriptionContractId + `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>`;
+
+    return {
+        html: customerDataForm,
+        footer: `<button type="submit" class="btn subBtn" onclick="editCustomerData(` + contract.subscriptionContractId + `, ` + i + `)">` + language_Settings.updateBtn + `</button>`
+    };
+}
+
+  function generateDeleteProductForm(contract, contractIndex, lineIndex) {
+    return {
+      html:
+        `<div class='status-content'>
+                <div class='status-heading'>
+                    <p>Are you Sure you want to remove this product from subscription contract? </p>
+                </div>
+                <div class='status-buttons' >
+                	<button class='btn custom-btn btn-warning subBtn' onclick='removeProductForm(` +
+        contract.subscriptionContractId +
+        `,` +
+        lineIndex +
+        `)'>  Yes </button>
+                     <button class='btn custom-btn btn-warning subBtn'>  No </button>
+                </div>
+				<div class="loader loading-btn" id="loadingDialouge` +
+        contract.subscriptionContractId +
+        `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>
+            </div>`,
+      footer: "",
+    };
+  }
+
+  function generateEditFrequencyForm(contract, contractIndex) {
+    let productForm =
+      `<div class="ws-input-group ws-input-2">
+                      <label>` +
+      language_Settings.frequencyModelLabel +
+      `</label>
+                          <input type="number" name="frequency" min="1" value="` +
+      contract.subscriptionData.billingPolicy.intervalCount +
+      `">
+  					</div>
+					<div class="ws-input-group ws-input-2">
+                      <label>` +
+      language_Settings.frequencyTypeModelLabel +
+      `</label>
+                      <select name="frequencyType" value="` +
+      contract.subscriptionData.billingPolicy.interval +
+      `">
+							<option value="DAY">Days</option>
+                            <option value="WEEK">Weeks</option>
+                            <option value="MONTH">Months</option>
+                            <option value="YEAR">Year</option>
+                        </select>
+  					</div>
+					
+					<div class="loader loading-btn" id="loadingDialouge` +
+      contract.subscriptionContractId +
+      `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>`;
+
+    return {
+      html: productForm,
+      footer:
+        `<button type="submit" class="btn subBtn" onclick="editFrequency(` +
+        contract.subscriptionContractId +
+        `)">` +
+        language_Settings.updateBtn +
+        `</button>`,
+    };
+  }
+
+  function generateSearchProductForm(contract, contractIndex) {
+    let productForm =
+      `<div class="ws-input-group ws-input-1 search-input">
+                          <input type="text" name="productQuery" id="productQuery" onkeyup="focusProductSearch(` +
+      contractIndex +
+      `)"
+                                  placeholder="Seach Product(search at list 2/3 character)">
+  					</div>
+					<div class="searched-products" id="searched-products">
+
+                    </div>
+					<div class="loader loading-btn" id="loadingDialouge` +
+      contract.subscriptionContractId +
+      `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>`;
+
+    return {
+      html: productForm,
+      footer: ``,
+    };
+  }
+
+  async function focusProductSearch(contractIndex) {
+    try {
+      let searchQuery = document.getElementById("productQuery").value;
+
+      if (searchQuery.length > 3) {
+        let contract = sar_api_data.data[contractIndex];
+        document
+          .getElementById("loadingDialouge" + contract.subscriptionContractId)
+          .classList.add("active");
+        let promise = [
+          httpGetAsync(
+            rec_wsApiUrl +
+              "/searchProductContract?shopUrl=" +
+              rec_shop +
+              "&search=" +
+              searchQuery +
+              "&countryCode=" +
+              contract.subscriptionData.originOrder.billingAddress
+                .countryCodeV2,
+            "GET",
+            null
+          ),
+        ];
+        await Promise.all(promise)
+          .then(async (res) => {
+            document
+              .getElementById(
+                "loadingDialouge" + contract.subscriptionContractId
+              )
+              .classList.remove("active");
+            sar_product_search_data = res[0].data;
+            let wsSearchProductLi = ``;
+            sar_product_search_data.forEach((product, index) => {
+              let variantUl = document.createElement("ul");
+              variantUl.setAttribute("id", "variantList");
+              product.variants.edges.forEach((variant, j) => {
+                let li = document.createElement("li");
+                li.setAttribute("class", "item");
+
+                variantUl.appendChild(li);
+                li.innerHTML +=
+                  `<div class="checkbox">
+                                        <div class="left">
+                                        <label>` +
+                  variant.node.title +
+                  `</label>
+                                          </div>
+                                        <button class="btn btn--small subBtn" onclick="addProduct(` +
+                  index +
+                  `, ` +
+                  contractIndex +
+                  `, '` +
+                  j +
+                  `')">Add</button>
+  									</div>`;
+              });
+
+              let imgTag = ``;
+              if (product.image != "") {
+                imgTag = `<img src="` + product.image + `" class="img" alt="">`;
+              } else {
+                imgTag = `<img src="assets/no-image.png" class="img" alt="">`;
+              }
+              wsSearchProductLi +=
+                `<li>
+                                                <div class="checkbox">
+													<div class="left">
+                                                        <div class="image">
+                                                            ` +
+                imgTag +
+                `
+                                                        </div>
+													<label>` +
+                product.title +
+                `</label>
+													</div>
+													<div class="icon" onclick="openVariantList()">
+  														<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" enable-background="new 0 0 50 50" height="30px" id="Layer_1" version="1.1" viewBox="0 0 50 50" width="30px" xml:space="preserve"><rect fill="none" height="50" width="50"/><line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="4" x1="9" x2="41" y1="25" y2="25"/><line fill="none" stroke="#000000" stroke-miterlimit="10" stroke-width="4" x1="25" x2="25" y1="9" y2="41"/></svg>
+  													</div>
+                                                </div>
+												<ul class="variant-list" id="variant-list">
+												` +
+                variantUl.innerHTML +
+                `
+												</ul>
+                                            </li>`;
+            });
+            document.getElementById("searched-products").innerHTML =
+              `<div class="suggestion">
+                                    <div class="dropdown-list">
+                                        <ul>
+                                            ` +
+              wsSearchProductLi +
+              `
+                                        </ul>
+                                    </div>
+                                </div>`;
+          })
+          .catch(function (err) {
+            document
+              .getElementById(
+                "loadingDialouge" + contract.subscriptionContractId
+              )
+              .classList.remove("active");
+            throw err;
+          });
+      }
+    } catch (error) {
+      console.log("Error:SelfInvoking-", error);
+    }
+  }
+
+  function openVariantList() {
+    document.getElementById("variant-list").classList.add("active");
+  }
+
+  function generateEditNextBillingForm(contract, contractIndex) {
+    try {
+      let currentNextDate = new Date(contract.nextBillingDate)
+        .toISOString()
+        .substring(0, 10);
+      let pastDates = new Date().toISOString().split("T")[0];
+      let productForm =
+        `<div class="ws-input-group ws-input-1">
+                      <label>` +
+        language_Settings.nextBillingModelLabel +
+        `</label>
+                          <input type="date" name="nextBillingDate" value="` +
+        currentNextDate +
+        `" min="` +
+        pastDates +
+        `">
+  					</div>
+					<div class="loader loading-btn" id="loadingDialouge` +
+        contract.subscriptionContractId +
+        `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>`;
+
+      return {
+        html: productForm,
+        footer:
+          `<button type="submit" class="btn subBtn" onclick="editNextBillingDate(` +
+          contract.subscriptionContractId +
+          `)">` +
+          language_Settings.updateBtn +
+          `</button>`,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function addProduct(index, contractIndex, variantIndex) {
+    try {
+      let variantData =
+        sar_product_search_data[index].variants.edges[variantIndex].node;
+      let findContract = sar_api_data.data[contractIndex];
+      document
+        .getElementById("loadingDialouge" + findContract.subscriptionContractId)
+        .classList.add("active");
+      let payload = {
+        variant: variantData,
+        shopUrl: rec_shop,
+        subscription_contract_id: findContract.subscriptionContractId,
+        action: "addLineItem",
+      };
+      let promise = [
+        httpGetAsync(
+          rec_wsApiUrl + "/updateSubscriptionContract",
+          "POST",
+          payload
+        ),
+      ];
+      await Promise.all(promise)
+        .then(async (res) => {
+          await getSubscriptionContracts();
+          let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+            return (
+              item.subscriptionContractId == findContract.subscriptionContractId
+            );
+          });
+          await showFullContract(elementIndex);
+          document
+            .getElementById(
+              "loadingDialouge" + findContract.subscriptionContractId
+            )
+            .classList.remove("active");
+          closeCommonDialogue();
+        })
+        .catch(function (err) {
+          document
+            .getElementById("loadingDialouge" + contract.subscriptionContractId)
+            .classList.remove("active");
+          throw err;
+        });
+    } catch (error) {
+      console.log("Error:SelfInvoking-", error);
+    }
+  }
+
+  function productTitles(contract) {
+    let productTitles = "";
+    for (let i = 0; i < contract.subscriptionData.lines.edges.length; i++) {
+      productTitles +=
+        '   <div class="products"> ' +
+        '   <div class="product">' +
+        "   <label>" +
+        contract.subscriptionData.lines.edges[i].node.title +
+        "</label>" +
+        " <p>" +
+        getPrice(
+          contract.subscriptionData.lines.edges[i].node.currentPrice.amount,
+          contract.subscriptionData.lines.edges[i].node.currentPrice
+            .currencyCode
+        ) +
+        "</p>" +
+        "              </div>" +
+        "          </div>";
+    }
+    return productTitles;
+  }
+
+  async function tabActive(tabName, index, contractId) {
+    if (activeTab !== tabName) {
+      let contract = sar_api_data.data.find(
+        (e) => e.subscriptionContractId == contractId
+      );
+      let child = document.querySelectorAll(".order-tab");
+      child.forEach(function (el, index) {
+        el.classList.remove("active");
+        el.style.backgroundColor = "#f3f3f3";
+      });
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName).style.backgroundColor =
+        portal_Settings.buttonColor;
+      document.getElementById(tabName).style.color =
+        portal_Settings.buttonTextColor;
+      activeTab = tabName;
+
+      if (tabName === "completed" + index) {
+        document.getElementById("completedOrderData" + index).innerHTML =
+          await completedOrderList(contract, index);
+        document
+          .getElementById("completed-order" + index)
+          .classList.add("active");
+        document
+          .getElementById("upcoming-order" + index)
+          .classList.remove("active");
+        document
+          .getElementById("subscription-details" + index)
+          .classList.remove("active");
+      } else if (tabName === "subcriptionDetail" + index) {
+        document
+          .getElementById("subscription-details" + index)
+          .classList.add("active");
+        document
+          .getElementById("completed-order" + index)
+          .classList.remove("active");
+        document
+          .getElementById("upcoming-order" + index)
+          .classList.remove("active");
+      } else {
+        document
+          .getElementById("subscription-details" + index)
+          .classList.remove("active");
+        document
+          .getElementById("completed-order" + index)
+          .classList.remove("active");
+        document
+          .getElementById("upcoming-order" + index)
+          .classList.add("active");
+      }
+    }
+  }
+
+  function getDate(billingPolicy, date, number) {
+    let day = 24 * 60 * 60 * 1000;
+    let finalAdd = 0;
+    if (billingPolicy.interval.toLowerCase() == "day") {
+      finalAdd = day * billingPolicy.intervalCount * number;
+      return new Date(new Date(date).getTime() + finalAdd);
+    } else if (billingPolicy.interval.toLowerCase() == "week") {
+      finalAdd = 7 * day * billingPolicy.intervalCount * number;
+      return new Date(new Date(date).getTime() + finalAdd);
+    } else if (billingPolicy.interval.toLowerCase() == "month") {
+      return addMonths(new Date(date), billingPolicy.intervalCount * number);
+    } else if (billingPolicy.interval.toLowerCase() == "year") {
+      return new Date(
+        new Date(date).setFullYear(
+          new Date(date).getFullYear() + billingPolicy.intervalCount * number
+        )
+      );
+    }
+  }
+
+  function addMonths(date, months) {
+    var d = date.getDate();
+    date.setMonth(date.getMonth() + +months);
+    if (date.getDate() != d) {
+      date.setDate(0);
+    }
+    return date;
+  }
+
+  function convertDate(inputFormat) {
+    function pad(s) {
+      return s < 10 ? "0" + s : s;
+    }
+    var d = new Date(inputFormat);
+    return [pad(d.getDate()), pad(d.getMonth() + 1), d.getFullYear()].join("/");
+  }
+
+  function upcomingOrderList(contract, index) {
+    let compOrderlist = contract.subscriptionData.orders.edges;
+    let orderItem = "";
+    if (contract.subscriptionData.status === "ACTIVE") {
+      let maxCount;
+      let isMaxCount = false;
+      if (contract.subscriptionData.billingPolicy.maxCycles) {
+        isMaxCount = true;
+        if (
+          contract.subscriptionData.orders &&
+          contract.subscriptionData.orders.edges
+        ) {
+          maxCount =
+            contract.subscriptionData.billingPolicy.maxCycles -
+            contract.subscriptionData.orders.edges.length;
+        } else {
+          maxCount = contract.subscriptionData.billingPolicy.maxCycles;
+        }
+      }
+      let loopCount = isMaxCount ? maxCount : 50;
+      for (let i = 0; i < loopCount; i++) {
+        let orderDate = getDate(
+          contract.subscriptionData.billingPolicy,
+          contract.nextBillingDate,
+          i
+        );
+        let skipOrders = contract.subscriptionData.skipOrders
+          ? contract.subscriptionData.skipOrders
+          : [];
+        let buttonText =
+          skipOrders.indexOf(orderDate.toISOString()) === -1
+            ? language_Settings.skipLabel
+            : language_Settings.unSkipLabel;
+        let orderType =
+          skipOrders.indexOf(orderDate.toISOString()) === -1
+            ? "Skip"
+            : "Unskip";
+
+        let skipBtn = "";
+        if ((rec_from && rec_from == "webapp") || portal_Settings.skipPayment) {
+          skipBtn =
+            `<button class="btn subBtn" onclick="skipSubscriptionContracts('` +
+            orderDate.toISOString() +
+            `','` +
+            orderType +
+            `', ` +
+            index +
+            `)">` +
+            buttonText +
+            `</button>`;
+        }
+        orderItem +=
+          `<div class="order-detail">
+                <div class="left">
+                    <div class="order-date order-label">
+                        <label for="">` +
+          language_Settings.orderLabel +
+          ` ` +
+          language_Settings.dateLabel +
+          `:</label>
+                        <span>` +
+          convertDate(orderDate) +
+          `</span>
+                    </div>
+                    <div class="price order-label">
+                        <label for="">` +
+          language_Settings.totalLabel +
+          `:</label>
+                        <span>` +
+          getPrice(
+            parseFloat(contract.subscriptionData.totalPrice),
+            contract.subscriptionData.deliveryPrice.currencyCode
+          ) +
+          `</span>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="buttons">
+                        ` +
+          skipBtn +
+          `
+                        <div class="loader loading-btn" id="loadingSkipBtn` +
+          i +
+          `"><svg version="1.1" id="L4" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewbox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve"> <circle fill="#000" stroke="none" cx="6" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.1"></animate> </circle> <circle fill="#000" stroke="none" cx="26" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.2"></animate> </circle> <circle fill="#000" stroke="none" cx="46" cy="50" r="6"> <animate attributename="opacity" dur="1s" values="0;1;0" repeatcount="indefinite" begin="0.3"></animate> </circle> </svg></div>
+                    </div>
+                </div>
+            </div>`;
+      }
+    } else {
+      orderItem =
+        '<p class="no-orders">Your Contract has been paused , "No Upcoming Order"</p>';
+    }
+    return orderItem;
+  }
+
+  function productInfo(productList, orderType, taxPrice) {
+    let productDetail = "";
+    for (let i = 0; i < productList.length; i++) {
+      let imgSrc = "";
+      let price = "";
+      if (orderType === "completed") {
+        imgSrc =
+          productList[i].node.image && productList[i].node.image.originalSrc
+            ? productList[i].node.image.originalSrc
+            : "";
+        price = productList[i].node.discountedTotalSet
+          ? productList[i].node.discountedTotalSet.presentmentMoney
+          : taxPrice;
+      } else {
+        imgSrc =
+          productList[i].node.variantImage &&
+          productList[i].node.variantImage.originalSrc
+            ? productList[i].node.variantImage.originalSrc
+            : "";
+        price = productList[i].node.currentPrice;
+      }
+      productDetail +=
+        `<div class="order-product-item">
+                  <img src="` +
+        imgSrc +
+        `" alt="">
+                  <div class="order-info">
+                      <p><span>` +
+        productList[i].node.title +
+        ` (` +
+        productList[i].node.variantTitle +
+        `)</span></p>
+                      <p>{l:productPriceLabel} : <span>
+                          ` +
+        getPrice(parseFloat(price.amount), price.currencyCode) +
+        `
+                      </span></p>
+                  </div>
+              </div>`;
+    }
+    return productDetail;
+  }
+
+  function skipSubscriptionContracts(orderDate, orderType, index) {
+    try {
+      let payload = {
+        subscription_contract_id: selectedContract,
+        skipOrderDate: orderDate,
+        shopUrl: rec_shop,
+        orderType: orderType,
+      };
+      document.getElementById("loadingSkipBtn" + index).classList.add("active");
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("post", rec_wsApiUrl + "/skipSubscriptionContracts");
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.onreadystatechange = async function () {
+        try {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            await getSubscriptionContracts();
+            await showFullContract(index);
+            await tabActive("upcoming" + index, index);
+            document
+              .getElementById("loadingSkipBtn" + index)
+              .classList.remove("active");
+          }
+        } catch (error) {
+          console.log("Error:httpGetAsync-", error);
+          document
+            .getElementById("loadingSkipBtn" + index)
+            .classList.remove("active");
+        }
+      };
+      xmlHttp.send(JSON.stringify(payload));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function completedOrderList(contract, index) {
+    try {
+      return new Promise(function (resolve, reject) {
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open(
+          "get",
+          rec_wsApiUrl +
+            "/getSubscriptionContractOrders?contractId=" +
+            contract.subscriptionContractId +
+            "&shop=" +
+            rec_shop,
+          true
+        );
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.onreadystatechange = function () {
+          try {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+              let compOrderlist = JSON.parse(xmlHttp.responseText).data;
+
+              let orderItem = "";
+              for (let i = 0; i < compOrderlist.length; i++) {
+                let taxPrice = compOrderlist[i].ordersMeta.node.totalTaxSet
+                  ? compOrderlist[i].ordersMeta.node.totalTaxSet
+                      .presentmentMoney
+                  : {
+                      amount: "0.00",
+                      currencyCode: compOrderlist[i].deliveryPrice.currencyCode,
+                    };
+
+                let cProducts = "";
+                contract.subscriptionData.lines.edges.forEach((element) => {
+                  cProducts +=
+                    `
+                                <div class="left">
+                                    <div class="img">
+                                    ` +
+                    productImg(element) +
+                    `
+                                    </div>
+                                    <div class="left-content">
+                                        <div class="label name-label">
+                                        <label for="">` +
+                    element.node.title +
+                    ` - ` +
+                    getPrice(
+                      parseFloat(element.node.currentPrice.amount),
+                      element.node.currentPrice.currencyCode
+                    ) +
+                    `</label>
+                                        <div class="variant">(` +
+                    element.node.variantTitle +
+                    `)</div>
+                                        </div>
+                                    </div>
+                                </div>`;
+                });
+
+                orderItem +=
+                  `<div class="order-product">
+                            <div class="date">
+                                <label for="">` +
+                  language_Settings.orderLabel +
+                  ` ` +
+                  language_Settings.dateLabel +
+                  `: </label>
+                                <span>` +
+                  convertDate(compOrderlist[i].ordersMeta.node.createdAt) +
+                  `</span>
+                            </div>
+                            <div class="products order">
+                                <div class="top">
+                                    <div class="product">
+                                        ` +
+                  cProducts +
+                  `
+                                    </div>
+                                    <div class="right">
+                                        <div class="label1">
+                                            <label for=""> ` +
+                  language_Settings.delverLabel +
+                  `: </label>
+                                            <span>` +
+                  getPrice(
+                    parseFloat(contract.subscriptionData.deliveryPrice.amount),
+                    contract.subscriptionData.deliveryPrice.currencyCode
+                  ) +
+                  `</span>
+                                        </div>
+                                        <div class="label1">
+                                            <label for=""> ` +
+                  language_Settings.taxLabel +
+                  `: </label>
+                                            <span>` +
+                  getPrice(taxPrice.amount, taxPrice.currencyCode) +
+                  `</span>
+                                        </div>
+                                        <div class="label1">
+                                            <label for=""> ` +
+                  language_Settings.totalLabel +
+                  `: </label>
+                                            <span>` +
+                  getPrice(
+                    parseFloat(
+                      compOrderlist[i].ordersMeta.node.currentTotalPriceSet
+                        .presentmentMoney.amount
+                    ),
+                    compOrderlist[i].ordersMeta.node.currentTotalPriceSet
+                      .presentmentMoney.currencyCode
+                  ) +
+                  `</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+              }
+              resolve(orderItem);
+            }
+          } catch (error) {
+            console.log("Error:httpGetAsync-", error);
+          }
+        };
+        xmlHttp.send();
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  function closeViewOrderPopup(index) {
+    document
+      .getElementById("contractDetail" + index)
+      .classList.remove("active");
+    document.getElementById("minus" + index).classList.remove("active");
+    document.getElementById("plus" + index).classList.add("active");
+  }
+
+  function editPaymentMethod() {
+    try {
+      let xmlHttp = new XMLHttpRequest();
+      xmlHttp.open(
+        "get",
+        rec_wsApiUrl +
+          "/editPaymentMethod?shopUrl=" +
+          rec_shop +
+          "&paymentId=" +
+          sar_payment_method_id
+      );
+      xmlHttp.setRequestHeader("Content-Type", "application/json");
+      xmlHttp.onreadystatechange = function () {
+        try {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            document.getElementById("notifyMail").style.display = "block";
+            setTimeout(() => {
+              document.getElementById("notifyMail").style.display = "none";
+            }, 3000);
+          }
+        } catch (error) {
+          console.log("Error:httpGetAsync-", error);
+        }
+      };
+      xmlHttp.send();
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  function editShippingAddress(contractId) {
+    document
+      .getElementById("customerShipping" + contractId)
+      .classList.add("active");
+  }
+
+  function updateShippingAddress(contractId) {
+    sar_contract_update_id = contractId;
+    const form = document.getElementById("ws_subContractForm" + contractId);
+    document
+      .getElementById("loadingDialouge" + contractId)
+      .classList.add("active");
+    form.addEventListener("submit", handleSubmit);
+  }
+
+  function openWaringPopup(contractId) {
+    window.scrollTo(0, 0);
+    sar_contract_update_id = contractId;
+    document
+      .getElementById("warningOverlay" + contractId)
+      .classList.add("active");
+  }
+
+  function closeCancelResonPopup() {
+    document
+      .getElementById("warningOverlay" + sar_contract_update_id)
+      .classList.remove("active");
+    document
+      .getElementById("ws_subContractForm" + sar_contract_update_id)
+      .reset();
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    let data = {};
+    for (var [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    let findContract = sar_api_data.data.find(
+      (e) => e.subscriptionContractId == sar_contract_update_id
+    );
+
+    let payload = {
+      shippingAddress: data,
+      deliveryMethod: findContract.subscriptionData.deliveryMethod,
+      shopUrl: rec_shop,
+      subscription_contract_id: sar_contract_update_id,
+      customer: sar_customer_data,
+    };
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("post", rec_wsApiUrl + "/updateShippingAddress");
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.onreadystatechange = async function () {
+      try {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          await getSubscriptionContracts();
+          let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+            return item.subscriptionContractId == sar_contract_update_id;
+          });
+          await showFullContract(elementIndex);
+          document
+            .getElementById("loadingDialouge" + sar_contract_update_id)
+            .classList.remove("active");
+          closeCommonDialogue();
+        }
+      } catch (error) {
+        console.log("Error:httpGetAsync-", error);
+        document
+          .getElementById("loadingDialouge" + sar_contract_update_id)
+          .classList.remove("active");
+      }
+    };
+    xmlHttp.send(JSON.stringify(payload));
+  }
+
+  function editProducts(contractId, productIndex) {
+    sar_contract_update_id = contractId;
+    sar_contract_update_product_index = productIndex;
+    const form = document.getElementById("ws_subContractForm" + contractId);
+    document
+      .getElementById("loadingDialouge" + contractId)
+      .classList.add("active");
+    form.addEventListener("submit", updateProduct);
+  }
+
+  function updateProduct(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    let data = {};
+    for (var [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    let findContract = sar_api_data.data.find(
+      (e) => e.subscriptionContractId == sar_contract_update_id
+    );
+    let lineItemDetails =
+      findContract.subscriptionData.lines.edges[
+        sar_contract_update_product_index
+      ].node;
+    let payload = {
+      formData: data,
+      shopUrl: rec_shop,
+      subscription_contract_id: sar_contract_update_id,
+      updateFor: "productQty",
+      lineItemDetails: lineItemDetails,
+    };
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("post", rec_wsApiUrl + "/updateSubscriptionContract");
+
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.onreadystatechange = async function () {
+      try {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          await getSubscriptionContracts();
+          let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+            return item.subscriptionContractId == sar_contract_update_id;
+          });
+          await showFullContract(elementIndex);
+          document
+            .getElementById("loadingDialouge" + sar_contract_update_id)
+            .classList.remove("active");
+          closeCommonDialogue();
+        }
+      } catch (error) {
+        console.log("Error:httpGetAsync-", error);
+        document
+          .getElementById("loadingDialouge" + sar_contract_update_id)
+          .classList.remove("active");
+      }
+    };
+    xmlHttp.send(JSON.stringify(payload));
+  }
+
+  function editCustomerData(contractId, productIndex) {
+    sar_contract_update_id = contractId;
+    sar_contract_update_product_index = productIndex;
+    const form = document.getElementById("ws_subContractForm" + contractId);
+    document.getElementById("loadingDialouge" + contractId).classList.add("active")
+    form.addEventListener('submit', updateCustomerData);
+}
+
+function updateCustomerData(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    let data = {};
+    for (var [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    let findContract = sar_api_data.data.find(e => e.subscriptionContractId == sar_contract_update_id);
+    let customerData = findContract.subscriptionData.customer;
+    let payload = {
+        formData: data,
+        action: "editCustomerData",
+        shopUrl: rec_shop,
+        subscription_contract_id: sar_contract_update_id,
+        customerData: customerData
+    }
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("post", rec_wsApiUrl + "/updateSubscriptionContract");
+
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.onreadystatechange = async function () {
+        try {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                let res = JSON.parse(xmlHttp.responseText);
+              console.log(res,'res')
+                 sro_email = res.data.subscriptionData.customer.email;
+              rec_email = res.data.subscriptionData.customer.email;
+              console.log(sro_email,'rec_email')
+                await getSubscriptionContracts();
+                let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+                    return item.subscriptionContractId == sar_contract_update_id
+                });
+                await showFullContract(elementIndex);
+                document.getElementById("loadingDialouge" + sar_contract_update_id).classList.remove("active");
+                closeCommonDialogue();
+               let current_url =  window.location.href
+              console.log(current_url)
+               var new_url = new URL(current_url);
+              console.log(new_url,'new_url')
+               var search_params = new_url.searchParams;
+               search_params.set('email', sro_email);
+              console.log(new_url)
+               document.location.href = new_url;
+            }
+        } catch (error) {
+            console.log("Error:httpGetAsync-", error);
+            document.getElementById("loadingDialouge" + sar_contract_update_id).classList.remove("active");
+        }
+    };
+    xmlHttp.send(JSON.stringify(payload));
+}
+
+  function removeProductForm(contractId, productIndex) {
+    sar_contract_update_id = contractId;
+    sar_contract_update_product_index = productIndex;
+    const form = document.getElementById("ws_subContractForm" + contractId);
+    document
+      .getElementById("loadingDialouge" + contractId)
+      .classList.add("active");
+    form.addEventListener("submit", removeProduct);
+  }
+
+  function removeProduct(event) {
+    event.preventDefault();
+    let findContract = sar_api_data.data.find(
+      (e) => e.subscriptionContractId == sar_contract_update_id
+    );
+    let lineItemDetails =
+      findContract.subscriptionData.lines.edges[
+        sar_contract_update_product_index
+      ].node;
+    let payload = {
+      action: "removeProduct",
+      shopUrl: rec_shop,
+      subscription_contract_id: sar_contract_update_id,
+      lineItemDetails: lineItemDetails,
+    };
+    let xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("post", rec_wsApiUrl + "/updateSubscriptionContract");
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.onreadystatechange = async function () {
+      try {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+          await getSubscriptionContracts();
+          let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+            return item.subscriptionContractId == sar_contract_update_id;
+          });
+          await showFullContract(elementIndex);
+          document
+            .getElementById("loadingDialouge" + sar_contract_update_id)
+            .classList.remove("active");
+          closeCommonDialogue();
+        }
+      } catch (error) {
+        console.log("Error:httpGetAsync-", error);
+        document
+          .getElementById("loadingDialouge" + sar_contract_update_id)
+          .classList.remove("active");
+      }
+    };
+    xmlHttp.send(JSON.stringify(payload));
+  }
+
+  function editFrequency(contractId) {
+    sar_contract_update_id = contractId;
+    //   	sar_contract_update_product_index = productIndex;
+    const form = document.getElementById("ws_subContractForm" + contractId);
+    document
+      .getElementById("loadingDialouge" + contractId)
+      .classList.add("active");
+    form.addEventListener("submit", updateFrequency);
+  }
+
+  function editNextBillingDate(contractId) {
+    sar_contract_update_id = contractId;
+    const form = document.getElementById("ws_subContractForm" + contractId);
+    document
+      .getElementById("loadingDialouge" + contractId)
+      .classList.add("active");
+    form.addEventListener("submit", updateNextBillingDate);
+  }
+
+  async function updateFrequency(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    let data = {};
+    for (var [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+    let findContract = sar_api_data.data.find(
+      (e) => e.subscriptionContractId == sar_contract_update_id
+    );
+    let payload = {
+      formData: data,
+      shopUrl: rec_shop,
+      subscription_contract_id: sar_contract_update_id,
+      action: "updateFrequency",
+    };
+    let promise = [
+      httpGetAsync(
+        rec_wsApiUrl + "/updateSubscriptionContract",
+        "POST",
+        payload
+      ),
+    ];
+    await Promise.all(promise)
+      .then(async (res) => {
+        await getSubscriptionContracts();
+        let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+          return item.subscriptionContractId == sar_contract_update_id;
+        });
+        await showFullContract(elementIndex);
+        document
+          .getElementById("loadingDialouge" + sar_contract_update_id)
+          .classList.remove("active");
+        closeCommonDialogue();
+      })
+      .catch(function (err) {
+        document
+          .getElementById("loadingDialouge" + sar_contract_update_id)
+          .classList.remove("active");
+        throw err;
+      });
+  }
+
+  async function updateNextBillingDate(event) {
+    try {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      let data = {};
+      for (var [key, value] of formData.entries()) {
+        data[key] = value;
+      }
+      data.nextBillingDate = data.nextBillingDate.replaceAll("-", "/");
+      data["nextBillingDate"] = new Date(
+        new Date(data.nextBillingDate).getTime() + 12 * 60 * 60 * 1000
+      );
+      let findContract = sar_api_data.data.find(
+        (e) => e.subscriptionContractId == sar_contract_update_id
+      );
+      let payload = {
+        formData: data,
+        shopUrl: rec_shop,
+        subscription_contract_id: sar_contract_update_id,
+        action: "updateNextBillingDate",
+      };
+      let promise = [
+        httpGetAsync(
+          rec_wsApiUrl + "/updateSubscriptionContract",
+          "POST",
+          payload
+        ),
+      ];
+      await Promise.all(promise)
+        .then(async (res) => {
+          await getSubscriptionContracts();
+          let elementIndex = sar_api_data.data.findIndex(function (item, i) {
+            return item.subscriptionContractId == sar_contract_update_id;
+          });
+          await showFullContract(elementIndex);
+          document
+            .getElementById("loadingDialouge" + sar_contract_update_id)
+            .classList.remove("active");
+          closeCommonDialogue();
+        })
+        .catch(function (err) {
+          document
+            .getElementById("loadingDialouge" + sar_contract_update_id)
+            .classList.remove("active");
+          throw err;
+        });
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  function getPrice(price, format) {
+    let shopifyMoneyFormat = currencyObject[format].moneyFormat;
+    let convertPrice = Number(price).toFixed(2);
+    let value = formatMoney(convertPrice.toString(), shopifyMoneyFormat);
+    return value;
+  }
+
+  function createCookie(name, value, minutes) {
+    if (minutes) {
+      var date = new Date();
+      date.setTime(date.getTime() + minutes * 60 * 1000);
+      var expires = "; expires=" + date.toGMTString();
+    } else {
+      var expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+  }
+
+  function validateOTP() {
+    let sro_otp = document.getElementById("sro_otp").value;
+    let otpErrEle = document.getElementById("otp_error");
+    if (sro_otp != "") {
+      if (sro_otp == getCookie("sro_otp")) {
+        otpErrEle.classList.remove("active");
+        return true;
+      } else {
+        otpErrEle.classList.add("active");
+        return false;
+      }
+    } else {
+      otpErrEle.classList.add("active");
+      return false;
+    }
+  }
+
+  function getCookie(name) {
+    let cookie = {};
+    document.cookie.split(";").forEach(function (el) {
+      let [k, v] = el.split("=");
+      cookie[k.trim()] = v;
+    });
+    return cookie[name];
+  }
+
+  function handleCss(settings) {
+    let subBtnBackground =
+      settings && settings.buttonColor ? settings.buttonColor : rec_brand_color;
+    let subBtnFontColor =
+      settings && settings.buttonTextColor
+        ? settings.buttonTextColor
+        : "#ffffff";
+
+    let commonStyles =
+      `<style id='commonStyles'>
+    /* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiGyp8kv8JHgFVrLPTucXtAOvWDSHFF.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiGyp8kv8JHgFVrLPTufntAOvWDSHFF.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiGyp8kv8JHgFVrLPTucHtAOvWDSA.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLFj_Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLFj_Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLFj_Z1xlFd2JQEk.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLDz8Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLDz8Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLDz8Z1xlFd2JQEk.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJbecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJnecnFHGPezSQ.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiEyp8kv8JHgFVrJJfecnFHGPc.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLGT9Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLGT9Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLGT9Z1xlFd2JQEk.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLEj6Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLEj6Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLEj6Z1xlFd2JQEk.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* devanagari */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLCz7Z11lFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLCz7Z1JlFd2JQEl8qw.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/poppins/v15/pxiByp8kv8JHgFVrLCz7Z1xlFd2JQEk.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+.ws-subscription {
+  margin: 0 auto;
+  max-width: 900px;
+  width: 100%;
+  font-family: Poppins; 
+  opacity: 1 !important;
+  }
+  .ws-subscription * {
+    box-sizing: border-box; }
+  .ws-subscription .buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px; }
+    .ws-subscription .buttons .btn {
+      border-radius: 5px;
+      padding: 8px 20px;
+      color: ` +
+      subBtnFontColor +
+      `;
+      cursor: pointer;
+      text-align: center;
+      display: inline-block;
+      width: 100%;
+      max-width: 382px;
+      background: ` +
+      subBtnBackground +
+      `;
+      font-size: 15px;
+      font-style: normal;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      text-align: center;
+      border: 1px solid ` +
+      subBtnBackground +
+      `; }
+    .ws-subscription .buttons .otp-btn {
+      margin-bottom: 5px; }
+  .ws-subscription .form {
+    text-align: center; }
+    .ws-subscription .form .input {
+      margin-bottom: 15px; }
+      .ws-subscription .form .input .otp-input {
+        display: none; }
+        .ws-subscription .form .input .otp-input.active {
+          display: block;
+          margin: 10px auto; }
+      .ws-subscription .form .input .error {
+        display: none; }
+        .ws-subscription .form .input .error.active {
+          display: block;
+          font-size: 14px;
+          color: red; }
+      .ws-subscription .form .input label {
+        font-size: 17px;
+        margin-bottom: 15px;
+        display: block; }
+      .ws-subscription .form .input input {
+        width: calc(100% - 520px);
+        border-radius: 5px;
+        width: 100%;
+        max-width: 382px;
+        padding: 10px 18px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        color: #000;
+        box-sizing: border-box; }
+  .ws-subscription .loader {
+    display: none;
+    text-align: center; }
+    .ws-subscription .loader svg {
+      width: 120px; 
+		height: 100%
+	}
+    .ws-subscription .loader.active {
+      display: block; }
+  .ws-subscription .orders ul {
+    display: flex;
+    flex-direction: column;
+    font-size: 14px;
+    color: #333;
+    letter-spacing: 0.2px;
+    margin: 30px 0px 0px 0px; 
+    padding: 0; }
+    .ws-subscription .orders ul li {
+      list-style: none;
+      margin-bottom: 15px;
+//       border: 1px solid #3e82b0;
+      border-radius: 10px;
+      box-shadow: 0px 0px 5px 0px #0000003f;
+      background: #FBFBFB; }
+      .ws-subscription .orders ul li .contract-detail {
+        max-height: 0px;
+        overflow: hidden;
+        transition: all 0.4s;
+        display: none;
+        border-bottom-left-radius: 10px;
+        border-bottom-right-radius: 10px; }
+        .ws-subscription .orders ul li .contract-detail.active {
+          max-height: 1000px;
+          overflow: scroll;
+          display: block; }
+      .ws-subscription .orders ul li .order {
+        padding: 15px;
+        position: relative;
+      	border-radius: 10px; }
+          .ws-subscription .orders ul li .products .left{
+            display:flex;
+          }
+        .ws-subscription .orders ul li .order .show-hide {
+          cursor: pointer;
+          display: none; }
+          .ws-subscription .orders ul li .order .show-hide svg {
+            width: 24px; }
+          .ws-subscription .orders ul li .order .show-hide.active {
+            display: block; }
+        .ws-subscription .orders ul li .order .top {
+          display: flex;
+          justify-content: space-between;
+          padding-bottom: 15px;
+          border-bottom: 1px solid #BFCACE; }
+          .ws-subscription .orders ul li .order .top .left {
+            overflow: auto;
+            max-height: 130px; }
+          .ws-subscription .orders ul li .order .top .left .product{
+              display: flex;
+          }
+          .ws-subscription .orders ul li .order .top .left .link-btn button{
+                text-decoration: none;
+                font-weight: 600;
+                color: #3f81b0;
+                background: none;
+                border: none;
+                padding: 0;
+                margin: 0;
+		    }
+			
+            .ws-subscription .orders ul li .order .top .left .img {
+              margin-right: 10px;
+              display: flex;
+              flex-wrap: wrap;
+              flex-direction: column; }
+              .ws-subscription .orders ul li .order .top .left .img img {
+                border-radius: 10%;
+                width: 60px;
+                height: 42px;
+                object-fit: contain; }
+          .ws-subscription .orders ul li .order .top .right {
+            font-size: 16px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 24px;
+            letter-spacing: 0px;
+            text-align: right; }
+          .ws-subscription .orders ul li .order .top .right .label{
+				    display: flex;
+                    justify-content: flex-end;
+                    align-items: center;
+			}
+			.ws-subscription .orders ul li .order .top .right .label label{
+				margin-right: 5px;
+    			margin-bottom: 0px;
+			}
+          .ws-subscription .orders ul li .order .top .right .label .icon svg{
+				    height: 20px;
+                    width: 20px;
+                    cursor: pointer;
+                    stroke: ` +
+      subBtnBackground +
+      `;
+			}
+        .ws-subscription .orders ul li .order .bottom {
+          margin-top: 10px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center; }
+        .ws-subscription .orders ul li .order .bottom .next-billing .label{
+			display: flex;
+		}	
+        .ws-subscription .orders ul li .order .bottom .next-billing .label label{
+			margin-right: 5px;
+		}
+        .ws-subscription .orders ul li .order .bottom .next-billing .label .icon svg{
+			height: 20px;
+            width: 20px;
+            cursor: pointer;
+            stroke: ` +
+      subBtnBackground +
+      `;
+		}
+        .ws-subscription .orders ul li .order .right-content {
+          text-align: right; }
+          .ws-subscription .orders ul li .order .right-content .badge {
+            margin: 0 0px 5px 0; }
+          .ws-subscription .orders ul li .order .right-content .fulfilment p {
+            border-radius: 18px;
+            padding: 4px 8px;
+            text-transform: uppercase;
+            font-size: 12px;
+            line-height: 12px;
+            border: 1px solid;
+            margin: 0 0px 5px 0;
+            color: #fff;
+            display: inline-block; }
+            .ws-subscription .orders ul li .order .right-content .fulfilment p.UNFULFILLED {
+              background-color: #d43f3a; }
+        .ws-subscription .orders ul li .order .label {
+          margin-bottom: 5px;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 24px;
+          letter-spacing: 0px;
+          color: #333333; }
+          .ws-subscription .orders ul li .order .label .variant {
+            font-size: 12px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 18px;
+            letter-spacing: 0px;
+            text-align: left;
+            color: #666666; }
+          .ws-subscription .orders ul li .order .label .status {
+            color: #64BA08;
+            position: relative;
+            display: inline-block;
+            padding-left: 15px; }
+            .ws-subscription .orders ul li .order .label .status::before {
+              content: '';
+              position: absolute;
+              left: 0;
+              top: 50%;
+              height: 10px;
+              width: 10px;
+              background: #64ba2f;
+              border-radius: 100%;
+              transform: translateY(-50%); }
+          .ws-subscription .orders ul li .order .label.status {
+            text-transform: lowercase; }
+          .ws-subscription .orders ul li .order .label.total {
+            justify-content: unset; }
+          .ws-subscription .orders ul li .order .label.active {
+            color: #00B855; }
+        .ws-subscription .orders ul li .order .f-14 {
+          font-size: 14px; }
+  .ws-subscription .custom-btn {
+    margin-right: 5px;
+    padding: 5px 10px;
+    border-radius: 5px; }
+  .ws-subscription .subscription-contract-popup {
+    padding: 30px;
+    overflow: auto; }
+    .ws-subscription .subscription-contract-popup .popup-btn {
+      margin-top: 20px; }
+    .ws-subscription .subscription-contract-popup .close {
+      position: absolute;
+      top: 0px;
+      right: 10px;
+      transition: all 200ms;
+      font-size: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #333;
+      cursor: pointer; }
+      .ws-subscription .subscription-contract-popup .close svg {
+        width: 16px;
+        height: 16px; }
+      .ws-subscription .subscription-contract-popup .close:hover {
+        color: #337ab7; }
+  .ws-subscription .rec-tab-content {
+        padding: 15px;
+        background: white; 
+        position: initial;
+        visibility: visible;
+        opacity: 1;
+        display: block;
+    }
+  .ws-subscription .subscription-details {
+    display: none;
+    width: 100%; }
+    .ws-subscription .subscription-details.active {
+      display: block; }
+    .ws-subscription .subscription-details .created {
+		display: flex;
+    	align-items: center;
+	}
+    .ws-subscription .subscription-details .created label {
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 27px;
+      letter-spacing: 0px;
+margin: 0px 5px 0px 0px;
+      text-align: left; }
+    .ws-subscription .subscription-details .created span {
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 27px;
+      letter-spacing: 0px;
+      text-align: left; }
+    .ws-subscription .subscription-details .details {
+      display: flex;
+      justify-content: space-between;
+     }
+      .ws-subscription .subscription-details .details .left {
+        width: 60%;
+        padding-right: 15px;
+        padding-top: 15px;
+        border-right: 1px solid #BFCACE; }
+        .ws-subscription .subscription-details .details .left .top {
+          padding-bottom: 20px;
+          border-bottom: 1px solid #BFCACE; }
+          .ws-subscription .subscription-details .details .left .top .title label {
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 27px;
+            letter-spacing: 0px;
+            text-align: left; }
+          .ws-subscription .subscription-details .details .left .top .product-details {
+            max-height: 130px;
+            overflow: auto; }
+            .ws-subscription .subscription-details .details .left .top .product-details .products {
+              display: flex;
+              justify-content: space-between; }
+              .ws-subscription .subscription-details .details .left .top .product-details .products .product {
+                display: flex; }
+				.ws-subscription .subscription-details .details .left .top .product-details .products .price {
+					    display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        margin-top: 0;
+                        margin-bottom: 0;
+				}
+				.ws-subscription .subscription-details .details .left .top .product-details .products .price label{
+					margin-right: 5px;
+				}
+				.ws-subscription .subscription-details .details .left .top .product-details .products .price .product-action{
+					    display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin-bottom: 5px;		
+		
+				}
+				.ws-subscription .subscription-details .details .left .top .product-details .products .price .icon svg{
+					height: 20px;
+                    width: 20px;
+                    cursor: pointer;
+                    stroke: ` +
+      subBtnBackground +
+      `
+				}
+                .ws-subscription .subscription-details .details .left .top .product-details .products .product .image {
+                  width: 60px;
+                  margin-right: 10px;
+                  height: 60px;
+                  margin-top: 3px; }
+                  .ws-subscription .subscription-details .details .left .top .product-details .products .product .image img {
+                    width: 100%;
+                    border-radius: 5px; }
+                .ws-subscription .subscription-details .details .left .top .product-details .products .product .name .variant {
+                  font-size: 12px;
+                  font-style: normal;
+                  font-weight: 500;
+                  line-height: 18px;
+                  letter-spacing: 0px;
+                  text-align: left;
+                  color: #666666; }
+                .ws-subscription .subscription-details .details .left .top .product-details .products .product .name label {
+                  font-size: 18px;
+                  font-style: normal;
+                  font-weight: 500;
+                  line-height: 27px;
+                  letter-spacing: 0px;
+                  text-align: left;
+                  color: #333333; }
+        .ws-subscription .subscription-details .details .left .bottom {
+          margin-top: 10px; }
+          .ws-subscription .subscription-details .details .left .bottom .cost-detail {
+            display: flex;
+            justify-content: flex-start;
+            flex-direction: column;
+            align-items: flex-end; }
+            .ws-subscription .subscription-details .details .left .bottom .cost-detail .cost {
+              margin-bottom: 5px;
+              width: 270px;
+              display: flex;
+              justify-content: space-between;
+              font-size: 16px;
+              font-style: normal;
+              font-weight: 400;
+              line-height: 24px;
+              letter-spacing: 0px;
+              text-align: right; }
+        .ws-subscription .subscription-details .details .left .title {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 5px; }
+          .ws-subscription .subscription-details .details .left .title label {
+            font-size: 20px;
+            font-weight: 600; }
+        .ws-subscription .subscription-details .details .left .detail {
+          display: flex; }
+          .ws-subscription .subscription-details .details .left .detail label {
+            margin-right: 5px; }
+        .ws-subscription .subscription-details .details .left .item-detail .product {
+          display: flex;
+          justify-content: space-between; }
+          .ws-subscription .subscription-details .details .left .item-detail .product label {
+            margin-right: 5px; }
+        .ws-subscription .subscription-details .details .left .cost-detail {
+          display: flex;
+          justify-content: space-between; }
+          .ws-subscription .subscription-details .details .left .cost-detail label {
+            font-weight: bold;
+            margin-right: 5px; }
+      .ws-subscription .subscription-details .details .right {
+        width: calc(40% - 25px);
+        padding: 10px 10px 10px 20px; }
+        .ws-subscription .subscription-details .details .right .detail {
+          font-size: 14px;
+          font-style: normal;
+          font-weight: 300;
+          line-height: 24px;
+          letter-spacing: 0px;
+          text-align: left;
+          color: #666666; }
+        .ws-subscription .subscription-details .details .right .status label {
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 27px;
+          letter-spacing: 0px;
+          text-align: left; }
+        .ws-subscription .subscription-details .details .right .right-box {
+          display: flex;
+          justify-content: space-between; }
+        .ws-subscription .subscription-details .details .right .right-box .label{
+			    display: flex;
+    			justify-content: space-between;
+    			align-items: center;
+		}
+          .ws-subscription .subscription-details .details .right .right-box label {
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 500;
+            line-height: 27px;
+            letter-spacing: 0px;
+			margin: 0px 5px 0px 0px;
+            text-align: left; }
+        .ws-subscription .subscription-details .details .right .right-box .icon {
+            pointer-events: all;
+                background: initial;
+        }
+        .ws-subscription .subscription-details .details .right .right-box .icon svg {
+			height: 20px;
+			width: 20px;
+            cursor: pointer;
+			stroke: ` +
+      subBtnBackground +
+      `
+        }
+        .ws-subscription .subscription-details .details .right .customer-detail .shipping {
+          padding: 5px 20px; }
+          .ws-subscription .subscription-details .details .right .customer-detail .shipping .shipping-form {
+            display: none; }
+            .ws-subscription .subscription-details .details .right .customer-detail .shipping .shipping-form .two-input {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 10px; }
+              .ws-subscription .subscription-details .details .right .customer-detail .shipping .shipping-form .two-input .input {
+                width: calc(50% - 5px); }
+                .ws-subscription .subscription-details .details .right .customer-detail .shipping .shipping-form .two-input .input input {
+                  width: 100%; }
+            .ws-subscription .subscription-details .details .right .customer-detail .shipping .shipping-form .input input {
+              width: 100%;
+              margin-bottom: 10px; }
+          .ws-subscription .subscription-details .details .right .customer-detail .shipping.active .edit-email {
+            display: none; }
+          .ws-subscription .subscription-details .details .right .customer-detail .shipping.active .shipping-form {
+            display: block; }
+          .ws-subscription .subscription-details .details .right .customer-detail .shipping .title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px; }
+        .ws-subscription .subscription-details .details .right .payment-detail .payment .title {
+          display: flex;
+          justify-content: space-between;
+          align-items: center; }
+        .ws-subscription .subscription-details .details .right .payment-method  .notify {
+          display: none;
+          margin-bottom: 10px;
+          font-size: 14px; }
+          .ws-subscription .subscription-details .details .right .payment-method .notify p {
+            color: #378061; }
+        .ws-subscription .subscription-details .details .right .actions {
+          padding: 25px 20px; }
+  .ws-subscription .subscription {
+    border-radius: 10px; 
+position: relative;
+	}
+    .ws-subscription .subscription .box {
+      background-color: #ffffff;
+      background-size: contain;
+      padding: 9px 15px;
+      border-radius: 3px;
+      border-bottom: 1px solid #BFCACE; }
+    .ws-subscription .subscription .f-16 {
+      font-size: 16px;
+      font-weight: 600; }
+    .ws-subscription .subscription .customer-detail .edit-icon {
+      font-weight: 600;
+      cursor: pointer;
+      color: #3a3a3a; }
+    @media only screen and (max-width: 980px) {
+      .ws-subscription .subscription .subscription .left {
+        width: 50%; }
+      .ws-subscription .subscription .subscription .right {
+        width: 50%; } }
+    @media only screen and (max-width: 768px) {
+      .ws-subscription .subscription .subscription .left {
+        width: 100%; }
+      .ws-subscription .subscription .subscription .right {
+        width: 100%; } }
+  .ws-subscription .grid__item .head-title {
+    color:` +
+      portal_Settings.headTitleColor +
+      `;
+    text-align: center; }
+    .ws-subscription .grid__item .head-title label {
+      text-transform: uppercase;
+      margin-bottom: 0px;
+      font-size: 22px;
+      font-weight: 600; }
+  .ws-subscription .recurring-content .contract-detail {
+    border: 1px solid #f9f7f7; }
+  .ws-subscription .interval-popup {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background: #00000020;
+    top: 0;
+    left: 0;
+    display: none; }
+    .ws-subscription .interval-popup.active {
+      display: block; }
+  .ws-subscription .popup-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    width: 100%;
+    max-width: 350px;
+    margin: 0 auto; }
+    .ws-subscription .popup-content input {
+      width: 100%; }
+  .ws-subscription .popup-buttons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 30px; }
+  .ws-subscription .subBtn {
+    white-space: nowrap; 
+    background: ` +
+      subBtnBackground +
+      `;
+    color: ` +
+      subBtnFontColor +
+      `;
+    }
+  .ws-subscription .completed-order {
+    display: none;
+    width: 100%; }
+    .ws-subscription .completed-order .products .top .product {
+      max-height: 110px;
+      height: 100%;
+      width: 450px;
+      overflow: auto; }
+    .ws-subscription .completed-order .products .top .right {
+      width: calc(100% - 450px); }
+      .ws-subscription .completed-order .products .top .right .label {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 80px;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: 0px; }
+      .ws-subscription .completed-order .products .top .right span {
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 400;
+        line-height: 24px;
+        letter-spacing: 0px; }
+    .ws-subscription .completed-order.active {
+      display: block; 
+		height: 100%;
+    max-height: 350px;
+    overflow: auto;
+	}
+  .ws-subscription .order-item p {
+    margin: 5px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666; }
+    .ws-subscription .order-item p span {
+      color: #333; }
+  .ws-subscription .order-item .order-info {
+    margin: 0 10px;
+    width: 100%; }
+  .ws-subscription .order-item img {
+    width: 80px;
+    height: 60px;
+    margin: 3px 0; }
+  .ws-subscription .upcoming-order {
+    display: none;
+    width: 100%;
+    height: 100%;
+    max-height: 350px;
+    overflow: auto; }
+    .ws-subscription .upcoming-order .order-detail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 10px;
+      border-bottom: 1px solid #BFCACE; }
+      .ws-subscription .upcoming-order .order-detail .left {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center; }
+        .ws-subscription .upcoming-order .order-detail .left .order-date {
+          margin-right: 20px; }
+        .ws-subscription .upcoming-order .order-detail .left .order-label {
+          font-size: 18px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: 27px;
+          letter-spacing: 0px;
+          display: flex;
+          align-items: center;
+          flex-direction: row;
+          text-align: left; }
+        .ws-subscription .upcoming-order .order-detail .left .order-label label{
+			margin: 0px 5px 0px 0px;
+		}
+          .ws-subscription .upcoming-order .order-detail .left .order-label span {
+            color: #666666;
+            font-weight: 400; 
+            line-height: 27px;
+            letter-spacing: 0px;
+            text-align: left; }    
+        }
+      .ws-subscription .upcoming-order .order-detail .right .buttons {
+        margin-top: 0px;
+        text-align: right;
+        display: block; }
+        .ws-subscription .upcoming-order .order-detail .right .buttons .btn {
+          //max-width: 140px; 
+		}
+    .ws-subscription .upcoming-order.active {
+      display: block; }
+  .ws-subscription .order-tabs {
+    width: 100%;
+    display: flex;
+    justify-content: space-between; }
+  .ws-subscription .order-tab {
+    width: 50%;
+    text-align: center;
+    padding: 8px 10px;
+    font-size: 16px;
+    font-weight: 600;
+    background-color: #f3f3f3;
+    margin: 0;
+    cursor: pointer;
+    transition: all 0.5s ease; }
+    .ws-subscription .order-tab.active {
+      background-color: ` +
+      subBtnBackground +
+      `;
+      color: white; }
+  .ws-subscription .loading-btn {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #0000002b;
+    top: 0;
+    left: 0; }
+  .ws-overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.7);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    width: 100vw;
+    padding: 40px;
+    overflow: auto;
+    z-index: 9999;
+}
+    .ws-overlay.active {
+      visibility: visible;
+      opacity: 1;
+       }
+    .ws-overlay .popup {
+      margin: 70px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 5px;
+      position: relative;
+		max-width: 560px;
+		width: 100%;
+      transition: all 0.4s ease-in-out; }
+      .ws-overlay .popup .close {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        transition: all 200ms;
+        font-size: 30px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333; }
+        .ws-overlay .popup .close:hover {
+          color: #337ab7; }
+      .ws-overlay .popup .content {
+        max-height: 30%;
+        overflow: auto;
+        padding-bottom: 20px; }
+  .ws-subscription .cancel-reason-popup {
+    margin: 70px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    position: relative;
+    transition: all 0.4s ease-in-out;
+    width: 100%;
+    max-width: 570px; }
+    .ws-subscription .cancel-reason-popup .head {
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 20px; }
+      .ws-subscription .cancel-reason-popup .head h3 {
+        margin-bottom: 10px; }
+    .ws-subscription .cancel-reason-popup .popup-btn {
+      margin-top: 20px; }
+    .ws-subscription .cancel-reason-popup .modal-body .single-input select {
+      width: 100%;
+      margin-bottom: 10px; }
+    .ws-subscription .cancel-reason-popup .close {
+      position: absolute;
+      top: 0px;
+      right: 10px;
+      transition: all 200ms;
+      font-size: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #333;
+      cursor: pointer; }
+      .ws-subscription .cancel-reason-popup .close svg {
+        width: 16px;
+        height: 16px; }
+      .ws-subscription .cancel-reason-popup .close:hover {
+        color: #337ab7; }
+  .ws-subscription .no-orders {
+    margin: 10px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600; }
+  .ws-subscription .order-product-item {
+    display: flex; }
+  .ws-subscription .order-product {
+    display: block;
+    width: 100%; }
+    .ws-subscription .order-product .date {
+      font-size: 18px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 23px;
+      letter-spacing: 0px;
+      text-align: left; }
+      .ws-subscription .order-product .date label{
+        display: initial;
+      }
+      .ws-subscription .order-product .date span {
+        font-size: 17px;
+        font-weight: 400; }
+  .ws-subscription .name-label {
+    height: 50px;
+    align-items: center; }
+  .ws-subscription .completed-product-info {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap; }
+  .ws-subscription .grid__item {
+    width: 100%;
+    max-width: initial; 
+    float: initial;
+    }
+
+.ws-subscription .subscription .right .customer-detail .name,
+.email {
+  padding: 15px 15px; }
+
+.ws-overlay .popup h2,
+.ws-overlay .popup h3 {
+  margin-top: 0;
+  color: #333;
+  font-family: Poppins, Tahoma, Arial, sans-serif;
+  margin-bottom: 20px;
+  padding-right: 40px; }
+  .mb-15 {
+    margin-bottom: 15px; }
+
+
+    // commonmodal css
+    .ws-modal{
+        max-width: 440px;
+      }
+      
+        .ws-modal-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #ccc;
+      }
+      .ws-modal-header span{
+        font-size: 22px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: 33px;
+        letter-spacing: 0px;
+        text-align: left;
+        }
+      .ws-modal .ws-modal-header .ws-close-icon{
+        cursor: pointer;
+        height:20px;
+        width:20px;
+      }
+      .ws-modal-body {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: space-between;
+          margin-top: 15px;
+      }
+      .ws-modal-body .status-content {
+        margin-bottom: 15px;
+        width: 100%;
+      }
+		.ws-modal-body .loading-btn{
+			position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            z-index: 4;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ffffff80;
+			display: none;
+		}
+		.ws-modal-body .loading-btn.active{
+			display:flex;
+		}
+		.ws-modal-body .loading-btn svg{
+			width: 150px;
+		    height: 150px;
+		    padding-left: 50px;
+		}
+      .ws-modal-body .status-content .status-buttons{
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+      .ws-modal-body .status-content .status-buttons .custom-btn{
+        padding: 10px 30px;
+    }
+      .ws-modal-footer {
+        margin-top: 10px;
+        text-align: right;
+    	border-top: 1px solid #e5e5e5;
+    	padding-top: 15px;
+      }
+      .ws-input-group {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          margin-bottom: 15px;
+      }
+      .ws-input-group.ws-input-1 {
+          width: 100%;
+      }
+      
+      .ws-input-group:first-child {
+        //   margin-top: 0px;
+      }
+      .ws-input-group.ws-input-2 {
+          width: calc(50% - 10px);
+      }
+      .ws-input-group label{
+          font-size: 16px;
+          line-height: 1.5;
+          color: #666666;
+      }
+      .ws-input-group input{
+          background: #FFFFFF;
+          border: 1px solid #BFCACE;
+          box-sizing: border-box;
+          border-radius: 5px;
+          padding:10px 20px;
+      }
+		.search-input{margin-bottom: 0px;} 
+		.search-input input{
+		
+		    border-bottom-left-radius: 0px;
+    		border-bottom-right-radius: 0px;
+		}
+	.subBtn {
+      white-space: nowrap; 
+      background: ` +
+      subBtnBackground +
+      `;
+      color: ` +
+      subBtnFontColor +
+      `;
+	  cursor: pointer;
+    }
+	.ws-preview{
+		cursor: not-allowed !important;
+	}
+	.ws-preview-icon {
+		pointer-events: none;
+	}
+	.preview-text{
+		display: none;
+		padding: 10px;
+	    border: 1px solid #ccc;
+    	border-radius: 5px;
+	    margin-top: 20px;
+    	box-shadow: 0 0 5px 0px #b9b9b9;
+	}
+	.preview-text p{
+		font-weight: 400;
+	}
+.searched-products{
+width: 100%;
+}
+	.dropdown-list {
+	 max-height: 450px;
+	 overflow: auto;
+	 border: 1px solid #e4e4e4;
+	 border-top: 0;
+}
+ .dropdown-list ul {
+	 display: flex;
+	 flex-direction: column;
+	 font-size: 14px;
+	 color: #333;
+	 letter-spacing: 0.2px;
+	 padding: 5px 5px 0px 10px;
+}
+ .dropdown-list ul li {
+	 list-style: none;
+	 padding: 5px 10px;
+	 border-bottom: 1px solid #e4e4e4;
+}
+ .dropdown-list ul li .checkbox  {
+	 display: flex;
+	 align-items: center;
+	 justify-content:space-between;
+	 margin-bottom: 0px;
+	 padding-bottom: 0px;
+}
+.dropdown-list ul li .checkbox .icon{
+	 cursor: pointer;
+}
+.dropdown-list ul li .checkbox .left{
+	display: flex;
+	 align-items: center;
+}
+.dropdown-list ul li .variant-list{
+	padding: 5px 20px 0px 20px;
+    display: none;
+}
+.dropdown-list ul li .variant-list.active{
+    display: block;
+}
+ .dropdown-list ul li .checkbox  .image {
+	 width: 40px;
+	 height: 40px;
+	 margin: 0px 15px 0px 5px;
+}
+ .dropdown-list ul li .checkbox  .image img {
+	 height: 100%;
+	 width: 100%;
+	 max-width: initial;
+	 object-fit: cover;
+}
+ .dropdown-list ul li .checkbox  .checkmark {
+	 top: calc(50% + 0px);
+	 transform: translateY(-51%);
+}
+.ws-subscription .orders ul li .order .top .right .label1 {
+    display: flex;
+    justify-content: space-between;
+    padding-left: 80px;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0px;
+    margin-bottom:5px;
+    color: #333333;
+}
+.ws-subscription .orders ul li .order .top .right .label1 {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+</style>`;
+    let responsiveStyle = `<style id='responsiveStyle'>
+@media only screen and (max-device-width: 1200px) {
+    .ws-subscription .grid__item .head-title label{
+     font-size:20px;
+    }
+    .ws-subscription .subscription-details .created label {
+        font-size:16px;
+    }
+    .ws-subscription .subscription-details .created label {
+        font-size:16px;
+    }
+    .ws-subscription .subscription-details .details .left .top .product-details .products .product .name label {
+        font-size:16px;
+    }
+    .ws-subscription .subscription-details .details .right .right-box label {
+        font-size:16px;
+    }
+    .ws-subscription .subscription-details .created span {
+        font-size:16px;
+    }
+    .ws-subscription .orders ul li .order .top .left .products {
+        margin-right:20px;
+    }
+  }
+  @media only screen and (max-device-width: 767px) {
+    .ws-subscription .grid__item .head-title label{
+     font-size:16px;
+    }
+    .ws-subscription .subscription-details .created label {
+        font-size:14px;
+    }
+    .ws-subscription .subscription-details .created label {
+        font-size:14px;
+    }
+    .ws-subscription .subscription-details .details .left .top .product-details .products .product .name label {
+        font-size:14px;
+    }
+    .ws-subscription .subscription-details .details .right .right-box label {
+        font-size:14px;
+    }
+    .ws-subscription .subscription-details .created span {
+        font-size:14px;
+    }
+    .ws-subscription .orders ul li .order .top .left .products {
+        margin-right:20px;
+    }
+    .ws-subscription .subscription-details .details .left .top .title label {
+        font-size:14px;
+    }
+    .ws-subscription .orders ul li .order .top {
+        display:block;
+    }
+    .ws-subscription .orders ul li .order .top .left .link-btn button {
+        font-size:14px;
+    }
+    .ws-subscription .orders ul li .order .label {
+        font-size:14px;
+    }
+    .ws-subscription .orders ul li .order .label .status {
+        font-size:14px;
+    }
+    .ws-subscription .orders ul li .order .bottom {
+        display:block;
+    }
+    .ws-subscription .orders ul li .order .bottom .right {
+        display: flex;
+        justify-content: end;
+    }
+    .ws-subscription .order-tabs {
+        display:block;
+    }
+    .ws-subscription .order-tab {
+        width:100%;
+        font-size:14px;
+    }
+    .ws-subscription .subscription-details .details {
+        display:block;
+    }
+    .ws-subscription .subscription-details .details .left {
+        width:100%;
+        border-right: none;
+        margin-bottom:20px;
+  }
+  .ws-subscription .subscription-details .details .left .bottom .cost-detail .cost span {
+    font-size:14px;
+  }
+  .ws-subscription .subscription-details .details .left .bottom .cost-detail .cost {
+      width:230px;
+  }
+  .ws-subscription .subscription-details .details .right {
+      width:100%;
+  }
+  .ws-modal-header span {
+    font-size:16px; 
+  }
+  .ws-input-group label {
+    font-size:14px; 
+  }
+  .ws-input-group {
+    margin-bottom: 10px;
+  }
+  .ws-input-group input {
+    font-size:14px; 
+    padding: 6px 15px;
+  }
+  .btn.btn-default {
+    font-size:14px; 
+  }
+  .ws-modal-body {
+      display:block;
+  }
+  .ws-input-group.ws-input-2 {
+      width:100%
+  }
+  .ws-modal .ws-modal-header .ws-close-icon {
+      width:16px;
+      height: 16px;
+  }
+  form select {
+      font-size:14px;
+  }
+  .ws-modal-body .status-content .status-buttons .custom-btn {
+    margin-right:20px;
+}
+}
+  @media only screen and (max-device-width: 479px) {
+    .ws-modal-header span {
+        font-size:14px;
+    }
+    .ws-input-group label {
+        font-size:12px;
+    }
+    .ws-input-group input {
+        font-size:12px;
+    }
+    form select {
+        font-size:12px;
+    }
+    .btn.btn-default {
+        font-size:12px;
+    }
+    .btn {
+        margin-right:0;
+    }
+    .ws-modal-body .status-content .status-buttons {
+        display:block;
+  }
+  .ws-modal-body .status-content .status-buttons .custom-btn {
+      margin-right:20px;
+  }
+  .ws-subscription .subscription-details .details .left .top .product-details .products {
+      display:block;
+  }
+  .ws-subscription .subscription-details .details .left .top .product-details .products .price {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom:10px;
+  }
+  .ws-subscription .subscription-details .details .left .top .product-details .products .price .product-action {
+    margin-right:20px;
+  }
+  .ws-subscription .subscription-details .details .left .top .product-details .products .product .image {
+    height:50px;
+  }
+  .ws-subscription .grid__item .head-title {
+      margin-top:10px;
+  }
+}
+
+</style>`;
+    addCssToHead(commonStyles, "commonStyles");
+    addCssToHead(responsiveStyle, "responsiveStyle");
+    let customCssContainer = `<style id="customCss">` + customCss + `</style>`;
+    addCssToHead(customCssContainer, "customCss");
+  }
+
+  function openCommonDialogue(headerLabel, body, footerButton, contractId) {
+    let wsModalOverlay = document.createElement("div");
+    wsModalOverlay.classList.add("ws-overlay");
+    wsModalOverlay.setAttribute("id", "common-overlay");
+    wsModalOverlay.classList.add("active");
+    wsModalOverlay.appendChild(
+      getWsModal(
+        headerLabel,
+        getWsModalBody(body),
+        getWsModalFooter(footerButton),
+        contractId
+      )
+    );
+    //     document.getElementsByClassName("ws-subscription")[0].appendChild(wsModalOverlay);
+    document.getElementsByTagName("body")[0].style.overflow = "hidden";
+    document.getElementsByTagName("body")[0].appendChild(wsModalOverlay);
+
+    if (rec_contract_id == "1724317865") {
+      disableActionsForPreview();
+    }
+  }
+
+  function getWsModal(header, body, footer, contractId) {
+    let wsModal = document.createElement("div");
+    wsModal.classList.add("popup");
+    wsModal.innerHTML = "";
+    let modalHead =
+      `<form id="ws_subContractForm` +
+      contractId +
+      `" action="javascript:;" enctype="multipart/form-data">
+		<div class="ws-modal-header">
+        <span>` +
+      header +
+      `</span>
+        <div class="ws-close-icon close">
+            <svg onclick="closeCommonDialogue()" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                x="0px" y="0px"  viewBox="0 0 357 357" style="enable-background:new 0 0 357 357;"
+                xml:space="preserve">
+                <g>
+                <g id="close">
+                    <polygon points="357,35.7 321.3,0 178.5,142.8 35.7,0 0,35.7 142.8,178.5
+                    0,321.3 35.7,357 178.5,214.2 321.3,357 357,321.3
+                    214.2,178.5" />
+                </g>
+                </g>
+        </svg>
+    </div>
+    </div>`;
+
+    wsModal.innerHTML = modalHead + body + footer;
+    wsModal.innerHTML += `</form>`;
+    wsModal.classList.add("ws-modal");
+    return wsModal;
+  }
+  function getWsModalBody(body) {
+    let wsModalBody = document.createElement("div");
+    wsModalBody.classList.add("ws-modal-body");
+    wsModalBody.innerHTML = "";
+    wsModalBody.innerHTML = body;
+    return wsModalBody.outerHTML;
+  }
+  function getWsModalFooter(footerButton) {
+    return (
+      `<div class="ws-modal-footer ws-d-flex-end">
+        <div class="ws-modal-actions">
+            <button class="btn btn-default subBtn" onclick="closeCommonDialogue()">` +
+      language_Settings.cancelSubBtn +
+      `</button>
+            ` +
+      footerButton +
+      `
+        </div>
+    </div>`
+    );
+  }
+
+  function closeCommonDialogue() {
+    document.getElementsByTagName("body")[0].style.overflow = "auto";
+    document.getElementById("common-overlay").classList.remove("active");
+    document
+      .getElementById("common-overlay")
+      .parentNode.removeChild(document.getElementById("common-overlay"));
+  }
+
+  function disableActionsForPreview() {
+    let submitBtns = document.getElementsByClassName("subBtn");
+    for (let i = 0; i < submitBtns.length; i++) {
+      submitBtns[i].classList.add("ws-preview");
+    }
+    let actionBtns = document.getElementsByClassName("ws-preview");
+    for (let i = 0; i < actionBtns.length; i++) {
+      actionBtns[i].setAttribute("disabled", true);
+    }
+    document.getElementById("edit_payment").classList.add("ws-preview-icon");
+  }
+
+  async function httpGetAsync(theUrl, reqType, body, callback) {
+    try {
+      return new Promise(function (resolve, reject) {
+        let xmlHttp = new XMLHttpRequest();
+        xmlHttp.open(reqType, theUrl, true);
+        xmlHttp.setRequestHeader("Content-Type", "application/json");
+        xmlHttp.onreadystatechange = function () {
+          try {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+              if (callback) {
+                resolve(callback(JSON.parse(xmlHttp.responseText)));
+              } else {
+                resolve(JSON.parse(xmlHttp.responseText));
+                // return JSON.parse(xmlHttp.responseText);
+              }
+            } else if (xmlHttp.status != 200) {
+              // makeDefaultVisible();
+              reject({
+                status: xmlHttp.status,
+                statusText: xmlHttp.statusText,
+              });
+            }
+          } catch (error) {
+            console.log("Error:httpGetAsync-", error);
+            // makeDefaultVisible();
+          }
+        };
+        xmlHttp.send(JSON.stringify(body));
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  formatMoney = function (cents, format) {
+    if (typeof cents == "string") {
+      cents = cents.replace(".", "");
+    }
+    var value = "";
+    var placeholderRegex = /\%\%\s*(\w+)\s*\%\%/;
+    //   var formatString = (format || WSConfig.moneyFormat);
+    var formatString = format;
+
+    function defaultOption(opt, def) {
+      return typeof opt == "undefined" ? def : opt;
+    }
+
+    function formatWithDelimiters(number, precision, thousands, decimal) {
+      precision = defaultOption(precision, 2);
+      thousands = defaultOption(thousands, ",");
+      decimal = defaultOption(decimal, ".");
+
+      if (isNaN(number) || number == null) {
+        return 0;
+      }
+
+      number = (number / 100.0).toFixed(precision);
+
+      var parts = number.split("."),
+        dollars = parts[0].replace(
+          /(\d)(?=(\d\d\d)+(?!\d))/g,
+          "$1" + thousands
+        ),
+        cents = parts[1] ? decimal + parts[1] : "";
+
+      return dollars + cents;
+    }
+
+    switch (formatString.match(placeholderRegex)[1]) {
+      case "amount":
+        value = formatWithDelimiters(cents, 2);
+        break;
+      case "amount_no_decimals":
+        value = formatWithDelimiters(cents, 0);
+        break;
+      case "amount_with_comma_separator":
+        value = formatWithDelimiters(cents, 2, ".", ",");
+        break;
+      case "amount_no_decimals_with_comma_separator":
+        value = formatWithDelimiters(cents, 0, ".", ",");
+        break;
+    }
+
+    return formatString.replace(placeholderRegex, value);
+  };
+</script>

@@ -1,0 +1,166 @@
+<div id="subscription-section" style="display:flex;gap:30px;align-items:flex-start;">
+
+  <!-- LEFT SIDE: Subscription + Products -->
+  <div style="flex:2;">
+    <h2>Available Subscription Products</h2>
+    <div id="product-list">
+      {% assign sub_collection = collections['test-subscription-plan'] %}
+
+      {% if sub_collection and sub_collection.products.size > 0 %}
+        {% for sub_product in sub_collection.products %}
+          <div class="sub-product" style="margin-bottom:10px;">
+            <label style="display:flex;align-items:center;gap:10px;">
+              <input type="checkbox" 
+                     class="product-checkbox" 
+                     data-id="{{ sub_product.variants.first.id }}" 
+                     data-name="{{ sub_product.title }}" 
+                     data-price="{{ sub_product.price }}"
+                     {% if forloop.first %}checked{% endif %}>
+              <img src="{{ sub_product.featured_image | img_url: '100x100' }}" alt="{{ sub_product.title }}">
+              <span>{{ sub_product.title }}</span>
+            </label>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No subscription products found.</p>
+      {% endif %}
+    </div>
+
+    <!-- Accordion for Subscription Plans -->
+    <div id="subscription-widget" style="margin-top:20px;border:1px solid #ddd;border-radius:8px;overflow:hidden;">
+      <div style="background:#f7f7f7;padding:10px;cursor:pointer;" onclick="toggleAccordion()">
+        <h3 style="margin:0;">Select Subscription Plan ▾</h3>
+      </div>
+      <div id="subscription-options" style="display:none;padding:10px;"></div>
+    </div>
+
+    <!-- Selected products -->
+    <div id="selected-products" style="margin-top:20px;">
+      <h3>Selected Products</h3>
+      <ul id="selected-products-list"></ul>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE: Totals -->
+  <div style="flex:1;border:1px solid #ddd;padding:15px;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.05);">
+    <h3>Order Summary</h3>
+    <p><strong>Subtotal:</strong> <span id="subtotal-price">$0.00</span></p>
+    <p style="color:green;"><strong>Discount:</strong> -<span id="discount-amount">$0.00</span></p>
+    <hr>
+    <p style="font-size:18px;"><strong>Total:</strong> <span id="total-price">$0.00</span></p>
+    <p id="plan-label" style="font-size:14px;color:#555;"></p>
+  </div>
+</div>
+
+<script>
+function toggleAccordion() {
+  const options = document.getElementById("subscription-options");
+  options.style.display = (options.style.display === "block") ? "none" : "block";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const subscriptionPlans = {{ product.selling_plan_groups | json }};
+  const appstlePlan = subscriptionPlans.find(p => p.id === "c1aa9e8783b21b9cb4a2f3d208e388edfd3013e8");
+
+  const productList = document.getElementById("product-list");
+  const subscriptionOptions = document.getElementById("subscription-options");
+  const selectedProductsList = document.getElementById("selected-products-list");
+  const subtotalEl = document.getElementById("subtotal-price");
+  const discountEl = document.getElementById("discount-amount");
+  const totalPriceEl = document.getElementById("total-price");
+  const planLabel = document.getElementById("plan-label");
+
+  let selectedProducts = {};
+
+  // Build subscription widget dynamically
+  if (appstlePlan && appstlePlan.selling_plans.length > 0) {
+    appstlePlan.selling_plans.forEach((plan, idx) => {
+      const wrapper = document.createElement("label");
+      wrapper.style.display = "block";
+      wrapper.innerHTML = `
+        <input type="radio" name="subscription-plan" value="${plan.id}" ${idx === 0 ? "checked" : ""}>
+        ${plan.name}
+      `;
+      subscriptionOptions.appendChild(wrapper);
+    });
+  } else {
+    subscriptionOptions.innerHTML = "<p>No subscription plans available.</p>";
+  }
+
+  // Collect default checked product
+  document.querySelectorAll(".product-checkbox").forEach(cb => {
+    if (cb.checked) {
+      selectedProducts[cb.dataset.id] = {
+        name: cb.dataset.name,
+        price: parseInt(cb.dataset.price, 10)
+      };
+    }
+  });
+
+  // Checkbox handler
+  productList.addEventListener("change", function (e) {
+    if (e.target.classList.contains("product-checkbox")) {
+      const id = e.target.dataset.id;
+      const name = e.target.dataset.name;
+      const basePrice = parseInt(e.target.dataset.price, 10);
+
+      if (e.target.checked) {
+        selectedProducts[id] = { name, price: basePrice };
+      } else {
+        delete selectedProducts[id];
+      }
+
+      // Ensure at least 1 product stays selected
+      if (Object.keys(selectedProducts).length === 0) {
+        e.target.checked = true;
+        selectedProducts[id] = { name, price: basePrice };
+      }
+
+      updateSelectedProducts();
+    }
+  });
+
+  // Subscription plan handler
+  subscriptionOptions.addEventListener("change", function () {
+    updateSelectedProducts();
+  });
+
+  // Update UI
+  function updateSelectedProducts() {
+    selectedProductsList.innerHTML = "";
+    const selectedPlanId = document.querySelector("input[name='subscription-plan']:checked").value;
+    const plan = appstlePlan.selling_plans.find(p => p.id == selectedPlanId);
+
+    let subtotal = 0;
+    Object.values(selectedProducts).forEach(prod => {
+      subtotal += prod.price / 100; // Shopify price in cents
+      const li = document.createElement("li");
+      li.textContent = `${prod.name} - $${(prod.price/100).toFixed(2)}`;
+      selectedProductsList.appendChild(li);
+    });
+
+    let discount = 0;
+    let total = subtotal;
+
+    // Apply discount (only once on total)
+    if (plan && plan.price_adjustments.length > 0) {
+      plan.price_adjustments.forEach(adj => {
+        if (adj.value_type === "fixed_amount") {
+          discount += adj.value / 100;
+        } else if (adj.value_type === "percentage") {
+          discount += subtotal * (adj.value / 100);
+        }
+      });
+      total = subtotal - discount;
+    }
+
+    // Update DOM
+    subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+    discountEl.textContent = `$${discount.toFixed(2)}`;
+    totalPriceEl.textContent = `$${total.toFixed(2)}`;
+    planLabel.textContent = plan ? `(${plan.name})` : "";
+  }
+
+  updateSelectedProducts();
+});
+</script>

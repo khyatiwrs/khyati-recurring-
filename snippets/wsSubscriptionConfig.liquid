@@ -1,0 +1,279 @@
+{% comment %}
+Don't edit this file.
+This snippet is auto generated and will be overwritten.
+{% endcomment %}
+   
+<script id="ws-subscription-helper">
+ var WSConfig = WSConfig || {};
+    WSConfig = {
+        "selectors": {
+            "payment_button_selectors": "form[action$='/cart/add'] .shopify-payment-button",
+            "subscriptionLinkSelector": "div.grid.myaccount",
+            "atcButtonPlacement": "BEFORE",
+            "subscriptionLinkPlacement": "BEFORE",
+        },
+        "moneyFormat": '{{shop.money_format}}',
+        "oneTimePurchaseText": "One Time Purchase",
+        "shop": "recurring-payment.myshopify.com",
+        "deliveryText": "delivery",
+        "purchaseOptionsText": "Purchase Options",
+        "manageSubscriptionButtonText": "Manage Subscription",
+        "subscriptionOptionText": "Subscribe and save",
+        "sellingPlanSelectTitle": "DELIVERY FREQUENCY",
+        "tooltipTitle": "Subscription detail",
+        "showTooltipOnClick": "false",
+        "tooltipDesctiption": "<strong>Have complete control of your subscriptions<\/strong><br\/><br\/>Skip, reschedule, edit, cancel deliveries anytime matching your needs.",
+        "orderStatusManageSubscriptionTitle": "Subscription",
+        "orderStatusManageSubscriptionDescription": "Continue to your account to view and manage your subscriptions.",
+        "orderStatusManageSubscriptionButtonText": "Manage your subscription",
+        "priceSelector": ".price__regular .price-item.price-item--regular",
+        "badgeTop": "",
+        "pricePlacement":"BEFORE",
+        "subscriptionOptionSelectedByDefault" : false,
+        "widgetEnabled": true,
+        "showTooltip" : true,
+        "manageSubscriptionUrl" : "apps/subscriptions",
+      	"style" : "<style></style>",
+      	"templateType" : 'template2',
+    };
+
+  
+
+    WSConfig.shop = '{{shop.permanent_domain}}';
+
+    {% if product %}
+    WSConfig.product = {{ product | json }};
+    WSConfig.product.collections = {{ product.collections | json }};
+    WSConfig.selling_plan_groups = {{ product.selling_plan_groups | json }};    
+    WSConfig.selected_or_first_available_variant = {{ product.selected_or_first_available_variant | json }};
+
+    WSConfig.selected_or_first_available_variant = {
+    "id": 39344018686121,
+    "title": "Lithograph - Height: 9\" x Width: 12\"",
+    "option1": "Lithograph - Height: 9\" x Width: 12\"",
+    "option2": null,
+    "option3": null,
+    "sku": null,
+    "requires_shipping": true,
+    "taxable": true,
+    "featured_image": null,
+    "available": true,
+    "name": "Example T-Shirt - Lithograph - Height: 9\" x Width: 12\"",
+    "public_title": "Lithograph - Height: 9\" x Width: 12\"",
+    "options": [
+        "Lithograph - Height: 9\" x Width: 12\""
+    ],
+    "price": 2500,
+    "weight": 3629,
+    "compare_at_price": null,
+    "inventory_management": null,
+    "barcode": null,
+    "requires_selling_plan": false,
+    "selling_plan_allocations": [
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2500
+                }
+            ],
+            "price": 2500,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2500,
+            "selling_plan_id": 862617769,
+            "selling_plan_group_id": "f9bc78875b1c3c27a06c0376036bd46ebd425d9d"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2250
+                }
+            ],
+            "price": 2250,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2250,
+            "selling_plan_id": 550863017,
+            "selling_plan_group_id": "e117bd56d433f659306c67e84e7d6a3cfc97b8d7"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2200
+                }
+            ],
+            "price": 2200,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2200,
+            "selling_plan_id": 550895785,
+            "selling_plan_group_id": "ba5345188bea52dd1a4d000ac399945556e06e37"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2375
+                }
+            ],
+            "price": 2375,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2375,
+            "selling_plan_id": 550928553,
+            "selling_plan_group_id": "4d9c928c64861b2163e04f5f12fa654ef2d86a0f"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2375
+                }
+            ],
+            "price": 2375,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2375,
+            "selling_plan_id": 550961321,
+            "selling_plan_group_id": "9e3d86917351c7aabfd57eb0fb53cf46e8cbbbea"
+        },
+//         {
+//             "price_adjustments": [
+//                 {
+//                     "position": 1,
+//                     "price": 2250
+//                 }
+//             ],
+//             "price": 2250,
+//             "compare_at_price": 2500,
+//             "per_delivery_price": 2250,
+//             "selling_plan_id": 554270889,
+//             "selling_plan_group_id": "c938825c06b81d52a01bd459ce322a592872c9bf"
+//         },
+//         {
+//             "price_adjustments": [
+//                 {
+//                     "position": 1,
+//                     "price": 2000
+//                 }
+//             ],
+//             "price": 2000,
+//             "compare_at_price": 2500,
+//             "per_delivery_price": 2000,
+//             "selling_plan_id": 603422889,
+//             "selling_plan_group_id": "8d2e0016c7463651a542b6282ea7e0cad9a3bb2b"
+//         },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2025
+                }
+            ],
+            "price": 2025,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2025,
+            "selling_plan_id": 604274857,
+            "selling_plan_group_id": "f263a703c90a26b8dc009341388e5d5d2040f3a3"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 27492
+                }
+            ],
+            "price": 27492,
+            "compare_at_price": 30000,
+            "per_delivery_price": 2291,
+            "selling_plan_id": 732627113,
+            "selling_plan_group_id": "ed5ec198b7796df6b93e3a424c377091207be99a"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2250
+                }
+            ],
+            "price": 2250,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2250,
+            "selling_plan_id": 841547945,
+            "selling_plan_group_id": "bcf4eb6e8f4c8374d449471222bfe9e09013cdc1"
+        },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 18000
+                }
+            ],
+            "price": 18000,
+            "compare_at_price": 20000,
+            "per_delivery_price": 2250,
+            "selling_plan_id": 864125097,
+            "selling_plan_group_id": "d31d918114c911bd4b73915ad60d09f23c89e940"
+        },
+//         {
+//             "price_adjustments": [],
+//             "price": 2500,
+//             "compare_at_price": null,
+//             "per_delivery_price": 2500,
+//             "selling_plan_id": 952205481,
+//             "selling_plan_group_id": "3fb17d7669aa391de63b9d8d04d9a732b3a13ac8"
+//         },
+//         {
+//             "price_adjustments": [],
+//             "price": 2500,
+//             "compare_at_price": null,
+//             "per_delivery_price": 2500,
+//             "selling_plan_id": 964952233,
+//             "selling_plan_group_id": "d31d918114c911bd4b73915ad60d09f23c89e940"
+//         },
+//         {
+//             "price_adjustments": [
+//                 {
+//                     "position": 1,
+//                     "price": 2250
+//                 }
+//             ],
+//             "price": 2250,
+//             "compare_at_price": 2500,
+//             "per_delivery_price": 2250,
+//             "selling_plan_id": 603455657,
+//             "selling_plan_group_id": "8d2e0016c7463651a542b6282ea7e0cad9a3bb2b"
+//         },
+        {
+            "price_adjustments": [
+                {
+                    "position": 1,
+                    "price": 2225
+                }
+            ],
+            "price": 2225,
+            "compare_at_price": 2500,
+            "per_delivery_price": 2225,
+            "selling_plan_id": 604307625,
+            "selling_plan_group_id": "f263a703c90a26b8dc009341388e5d5d2040f3a3"
+        },
+        {
+            "price_adjustments": [],
+            "price": 2500,
+            "compare_at_price": null,
+            "per_delivery_price": 2500,
+            "selling_plan_id": 952238249,
+            "selling_plan_group_id": "3fb17d7669aa391de63b9d8d04d9a732b3a13ac8"
+        }
+    ]
+};
+
+    {% for variant in product.variants %}
+    WSConfig.product.variants[{{forloop.index | minus: 1 }}]['inventory_quantity'] = {{ variant.inventory_quantity }};
+    {% endfor %}
+    {% endif %}
+
+    {% if customer %}
+    WSConfig.customer_tags = {{ customer.tags | json }};
+    WSConfig.customerEmail = '{{ customer.email}}';
+    {% endif %}
+
+</script> 

@@ -1,0 +1,283 @@
+{% comment %}
+  Condition to check if the current product or collection matches the selected product or collection
+{% endcomment %}
+
+{% for collection in product.collections %}
+  {% assign currect_collection = collection.id %}
+{% endfor %}
+
+{% assign selected_product = block.settings.selected_product %}
+{% assign selected_collection = block.settings.selected_collection %}
+{% assign all_products_true = block.settings.show_on_all_products %}
+
+{% if selected_product != blank or selected_collection != blank or all_products_true != blank %}
+  {% assign show_block = false %}
+
+  {% comment %}
+    Check if the current product matches the selected product
+  {% endcomment %}
+  {% if selected_product != blank and product.id == selected_product.id %}
+    {% assign show_block = true %}
+  {% endif %}
+
+  {% comment %}
+    Check if the current collection matches the selected collection
+  {% endcomment %}
+  {% if selected_collection != blank and currect_collection == selected_collection.id %}
+    {% assign show_block = true %}
+  {% endif %}
+
+  {% comment %}
+    Check if all products is selected
+  {% endcomment %}
+
+  {% if all_products_true %}
+    {% assign show_block = true %}
+  {% endif %}
+
+  {% if show_block %}
+    {% assign product_form_id = 'product-form-' | append: section.id %}
+    {% assign base_price = product.selected_or_first_available_variant.price %}
+
+    <div class="bulk-quantity-picker" {{ block.shopify_attributes }}>
+      <style>
+        .pack-options {
+          --active-bg: {{ block.settings.active_bg }};
+          --discount-text: {{ block.settings.discount_text }};
+          --discount-bg: {{ block.settings.discount_bg }};
+          --corner-radius: {{ block.settings.corner_radius }}rem;
+          --pack-spacing: {{ block.settings.pack_spacing }}rem;
+          --original-price-size: {{ block.settings.original_price_size }}rem;
+          --price-size: {{ block.settings.price_size }}rem;
+          --unit-price-size: {{ block.settings.unit_price_size }}rem;
+          --title-size: {{ block.settings.title_size }}rem;
+          --inactive-text: {{ block.settings.inactive_text }};
+          --active-text: {{ block.settings.active_text }};
+          --discount-size: {{ block.settings.discount_size }}rem;
+          --badge-bg: {{ block.settings.badge_bg }};
+          --badge-size: {{ block.settings.badge_size }}rem;
+          --badge-text: {{ block.settings.badge_text }};
+        }
+
+        .bulk-quantity-picker {
+          margin: 1em 0;
+        }
+
+        .pack-options {
+          display: flex;
+          gap: 1em;
+          margin-top: 0.7rem;
+          flex-wrap: wrap;
+          align-items: stretch;
+        }
+
+        .pack-wrapper {
+          position: relative;
+          display: flex;
+          flex: 1;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        .pack-option {
+          cursor: pointer;
+          border: 1px solid #ccc;
+          padding: 0.5em;
+          text-align: center;
+          transition: all 0.3s;
+          background: #fff;
+          color: var(--inactive-text);
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          border-radius: var(--corner-radius);
+          position: relative;
+          padding-bottom: var(--pack-spacing);
+          overflow: hidden;
+          width: 100%;
+        }
+
+        .pack-option--selected {
+          background: var(--active-bg);
+          color: var(--active-text);
+        }
+
+        .pack-option:hover {
+          border-color: #000;
+        }
+
+        .pack-badge {
+          position: absolute;
+          top: 0;
+          left: 50%;
+          transform: translate(-50%, -80%);
+          background: var(--badge-bg);
+          color: var(--badge-text);
+          font-size: var(--badge-size);
+          font-weight: bold;
+          text-align: center;
+          white-space: nowrap;
+          padding: 0.1em 0.5em;
+          border-radius: var(--corner-radius);
+          z-index: 2;
+        }
+
+        .pack-title {
+          font-weight: 600;
+          margin-bottom: 0.5em;
+          font-size: var(--title-size);
+        }
+
+        .pack-pricing {
+          margin: 0.5em 0;
+        }
+
+        .pack-original-price {
+          color: inherit;
+          opacity: 0.75;
+          text-decoration: line-through;
+          display: block;
+          margin-bottom: 0.25em;
+          font-size: var(--original-price-size);
+        }
+
+        .pack-final-price {
+          font-weight: bold;
+          margin-bottom: 0.25em;
+          font-size: var(--price-size);
+        }
+
+        .pack-unit-price {
+          font-size: var(--unit-price-size);
+          color: inherit;
+          opacity: 0.75;
+          margin-bottom: 0.5em;
+        }
+
+        .pack-discount {
+          position: absolute;
+          bottom: -0.25px;
+          left: -1px;
+          width: calc(100% + 2px);
+          box-sizing: border-box;
+          text-align: center;
+          padding: 0.5em;
+          background: var(--discount-bg);
+          color: var(--discount-text);
+          font-size: var(--discount-size);
+          font-weight: bold;
+          transform: translateZ(0);
+          will-change: transform;
+        }
+      </style>
+
+      <input type="hidden" name="quantity" id="Quantity-{{ section.id }}" value="1" form="{{ product_form_id }}">
+
+      {% assign unit_label = block.settings.unit_label %}
+      {% assign show_zero_discount = block.settings.show_zero_discount %}
+      {% assign show_discount_tag = block.settings.show_discount_tag %}
+      {% assign show_original_price = block.settings.show_original_price %}
+      {% assign show_unit_price = block.settings.show_unit_price %}
+      {% assign show_pack_price = block.settings.show_pack_price %}
+      {% assign show_quantity_title = block.settings.show_quantity_title %}
+      {% assign quantity_title_text = block.settings.quantity_title_text %}
+
+      {% if show_quantity_title %}
+        <legend class="form__label">{{ quantity_title_text }}</legend>
+      {% endif %}
+
+      <div class="pack-options" data-quantity-input-id="Quantity-{{ section.id }}">
+        {% assign pack_numbers = '1,2,3' | split: ',' %}
+        {% for i in pack_numbers %}
+          {% assign label_key = 'pack_' | append: i | append: '_label' %}
+          {% assign quantity_key = 'pack_' | append: i | append: '_quantity' %}
+          {% assign discount_key = 'pack_' | append: i | append: '_discount' %}
+          {% assign badge_key = 'pack_' | append: i | append: '_badge' %}
+          {% assign badge_text_key = 'pack_' | append: i | append: '_badge_text' %}
+
+          {% assign label = block.settings[label_key] %}
+          {% assign quantity = block.settings[quantity_key] | plus: 0 %}
+          {% assign discount = block.settings[discount_key] | plus: 0 %}
+          {% assign badge_enable = block.settings[badge_key] %}
+          {% assign badge_text = block.settings[badge_text_key] %}
+
+          {% if label != blank and quantity > 0 %}
+            {% assign compare_total = quantity | times: base_price %}
+            {% assign discount_multiplier = 100 | minus: discount %}
+            {% assign final_price = compare_total | times: discount_multiplier | divided_by: 100 %}
+            {% assign per_unit_price = final_price | divided_by: quantity %}
+
+            {% assign show_compare = false %}
+            {% if discount > 0 and show_original_price %}
+              {% assign show_compare = true %}
+            {% endif %}
+
+            {% assign show_discount_label = false %}
+            {% if show_discount_tag %}
+              {% if discount > 0 %}
+                {% assign show_discount_label = true %}
+              {% elsif discount == 0 and show_zero_discount %}
+                {% assign show_discount_label = true %}
+              {% endif %}
+            {% endif %}
+
+            <div class="pack-wrapper">
+              {% if badge_enable %}
+                <div class="pack-badge">{{ badge_text }}</div>
+              {% endif %}
+              <button
+                type="button"
+                class="pack-option{% if forloop.first %} pack-option--selected{% endif %}"
+                data-quantity="{{ quantity }}"
+              >
+                <div class="pack-content">
+                  <div class="pack-title">{{ label }}</div>
+                  <div class="pack-pricing">
+                    {% if show_compare %}
+                      <span class="pack-original-price">{{ compare_total | money }}</span>
+                    {% endif %}
+                    {% if show_pack_price %}
+                      <span class="pack-final-price">{{ final_price | money }}</span>
+                    {% endif %}
+                    {% if show_unit_price %}
+                      <div class="pack-unit-price">{{ per_unit_price | money }} / {{ unit_label }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                {% if show_discount_label %}
+                  <div class="pack-discount">Save {{ discount }}%</div>
+                {% endif %}
+              </button>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        var container = document.querySelector('.pack-options[data-quantity-input-id="Quantity-{{ section.id }}"]');
+        if (!container) return;
+
+        var quantityInput = document.getElementById(container.dataset.quantityInputId);
+        var buttons = container.querySelectorAll('.pack-option');
+
+        buttons.forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            buttons.forEach(b => {
+              b.classList.remove('pack-option--selected');
+            });
+            this.classList.add('pack-option--selected');
+            var qty = parseInt(this.getAttribute('data-quantity'), 10);
+            if (quantityInput && !isNaN(qty)) {
+              quantityInput.value = qty;
+              quantityInput.dispatchEvent(new Event('change'));
+            }
+          });
+        });
+      });
+    </script>
+  {% endif %}
+{% endif %}

@@ -1,0 +1,53 @@
+{%- comment -%}
+  Custom Subscription UI
+  - Renders one-time + subscription frequencies from product.selling_plan_groups
+  - Works inside your product form
+{%- endcomment -%}
+
+{%- assign has_plans = product.selling_plan_groups.size > 0 -%}
+
+<div class="custom-subscription-ui" data-product-handle="{{ product.handle }}" data-product-id="{{ product.id }}">
+  <h4 class="custom-subscription-ui__title">Purchase options</h4>
+
+  <fieldset class="custom-subscription-ui__modes" role="radiogroup" aria-label="Purchase options">
+    <label class="custom-subscription-ui__mode">
+      <input type="radio" name="purchase_mode_{{ section.id | default: 'root' }}" value="onetime" checked data-onetime>
+      <span>One-time purchase</span>
+    </label>
+
+    {%- if has_plans -%}
+      <label class="custom-subscription-ui__mode">
+        <input type="radio" name="purchase_mode_{{ section.id | default: 'root' }}" value="subscription" data-subscription>
+        <span>Subscribe & save</span>
+      </label>
+    {%- endif -%}
+  </fieldset>
+
+  {%- if has_plans -%}
+    <div class="custom-subscription-ui__plans" hidden data-plans>
+      {%- for group in product.selling_plan_groups -%}
+        <div class="custom-subscription-ui__group" data-group-id="{{ group.id }}">
+          {%- for plan in group.selling_plans -%}
+            <label class="custom-subscription-ui__plan">
+              <input
+                type="radio"
+                name="selling_plan_selector_{{ section.id | default: 'root' }}"
+                value="{{ plan.id }}"
+                data-plan-input
+              >
+              <span>
+                {{ plan.name }}
+              </span>
+            </label>
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%}
+    Hidden input that Shopify needs when *subscribing*.
+    NOTE: This must live *inside* the product form to submit correctly.
+  {%- endcomment -%}
+  <input type="hidden" name="selling_plan" data-selling-plan-input>
+</div>

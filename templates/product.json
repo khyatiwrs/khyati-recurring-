@@ -1,1 +1,390 @@
-{"sections":{"main":{"type":"main-product","blocks":{"bundlejoy_bundle_8JWiBH":{"type":"shopify:\/\/apps\/bundlejoy\/blocks\/bundle\/ae6aac81-91ff-4dc6-818d-4368c569c9fc","disabled":true,"settings":{"bb_bundle_show_header":true,"bb_bundle_header_text":"Bundles","bb_bundle_message_text":"Not sure where to start? Shopping for someone else? We’ve bundled together some of our crowd favourites, with an added discount.","bb_bundle_bg_color":"#111111","bb_bundle_text_color":"#ffffff","bb_bundle_container_bg_color":"#f2f2f7","bb_bundle_item_bg_color":"#e5e5ea","bb_bundle_item_sales_bg_color":"#ec008c","bb_bundle_custom_css":""}},"vendor":{"type":"text","settings":{"text":"{{ product.vendor }}","text_style":"uppercase"}},"title":{"type":"title","settings":{}},"appstle_bundles_appstle_classic_bundle_zU6EMq":{"type":"shopify:\/\/apps\/appstle-bundles\/blocks\/appstle-classic-bundle\/8909921b-2d24-4d68-9b12-9d045d3dcb0a","disabled":true,"settings":{}},"loop_subscriptions_loop_widget_Ud9epY":{"type":"shopify:\/\/apps\/loop-subscriptions\/blocks\/loop_widget\/267a7c64-5cb3-4552-b817-5485165f0a0b","disabled":true,"settings":{}},"caption":{"type":"text","settings":{"text":"{{ product.metafields.descriptors.subtitle.value }}","text_style":"subtitle"}},"price":{"type":"price","settings":{}},"variant_picker":{"type":"variant_picker","settings":{"picker_type":"button"}},"quantity_selector":{"type":"quantity_selector","settings":{}},"bulk_quantity_picker_NC7TED":{"type":"bulk_quantity_picker","settings":{"show_on_all_products":true,"selected_product":"","selected_collection":"","pack_1_label":"1 Piece","pack_1_quantity":1,"pack_1_discount":0,"pack_1_badge":false,"pack_1_badge_text":"High in Demand","pack_2_label":"3 Piece Bundle","pack_2_quantity":3,"pack_2_discount":10,"pack_2_badge":true,"pack_2_badge_text":"High in Demand","pack_3_label":"5 Piece Bundle","pack_3_quantity":5,"pack_3_discount":20,"pack_3_badge":false,"pack_3_badge_text":"High in Demand","show_quantity_title":true,"quantity_title_text":"Choose Quantity","unit_label":"Piece","show_original_price":true,"show_pack_price":true,"show_unit_price":true,"show_discount_tag":true,"show_zero_discount":true,"corner_radius":0.5,"pack_spacing":2.5,"title_size":1.7,"original_price_size":1.3,"price_size":1.5,"unit_price_size":1,"inactive_text":"#121212","active_text":"#ffffff","active_bg":"#aca7a7","discount_text":"#ffffff","discount_size":1.1,"discount_bg":"#1877f2","badge_bg":"#eaae16","badge_size":1,"badge_text":"#ffffff"}},"buy_buttons":{"type":"buy_buttons","settings":{"show_dynamic_checkout":true}},"description":{"type":"description","settings":{}},"collapsible-row-0":{"type":"collapsible_tab","settings":{"heading":"Materials","icon":"leather","content":"","page":""}},"collapsible-row-1":{"type":"collapsible_tab","settings":{"heading":"Shipping & Returns","icon":"truck","content":"","page":""}},"collapsible-row-2":{"type":"collapsible_tab","settings":{"heading":"Dimensions","icon":"ruler","content":"","page":""}},"collapsible-row-3":{"type":"collapsible_tab","settings":{"heading":"Care Instructions","icon":"heart","content":"","page":""}},"share":{"type":"share","settings":{"share_label":"Share"}},"easy_subscriptions_subscription_widget_TTYdfh":{"type":"shopify:\/\/apps\/easy-subscriptions\/blocks\/subscription-widget\/62ae0f16-e4ee-41c3-a62d-125b812e0b06","settings":{"pcolor":"#ffffff","scolor":"#303030","bcolor":"rgba(0,0,0,0)","easy-is-currency-code":false,"widget-feature-product":"","eca-title-font-size":15,"eca-text-font-size":16,"eca-price-font-size":16}}},"block_order":["bundlejoy_bundle_8JWiBH","vendor","title","appstle_bundles_appstle_classic_bundle_zU6EMq","loop_subscriptions_loop_widget_Ud9epY","caption","price","variant_picker","quantity_selector","bulk_quantity_picker_NC7TED","buy_buttons","description","collapsible-row-0","collapsible-row-1","collapsible-row-2","collapsible-row-3","share","easy_subscriptions_subscription_widget_TTYdfh"],"settings":{"enable_sticky_info":true,"gallery_layout":"stacked","media_size":"large","mobile_thumbnails":"hide","hide_variants":true,"enable_video_looping":false,"padding_top":36,"padding_bottom":12}},"image-with-text":{"type":"image-with-text","blocks":{"image-with-text-0":{"type":"heading","settings":{"heading":"Image with text","heading_size":"h1"}},"image-with-text-1":{"type":"text","settings":{"text":"<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.<\/p>","text_style":"body"}}},"block_order":["image-with-text-0","image-with-text-1"],"settings":{"height":"small","desktop_image_width":"medium","layout":"text_first","desktop_content_position":"top","desktop_content_alignment":"left","content_layout":"no-overlap","color_scheme":"background-2","mobile_content_alignment":"left","padding_top":36,"padding_bottom":36}},"multicolumn":{"type":"multicolumn","blocks":{"column-0":{"type":"column","settings":{"title":"Free Shipping","text":"<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.<\/p>","link_label":"","link":""}},"column-1":{"type":"column","settings":{"title":"Hassle-Free Exchanges","text":"<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.<\/p>","link_label":"","link":""}}},"block_order":["column-0","column-1"],"settings":{"title":"","heading_size":"h1","image_width":"full","image_ratio":"adapt","columns_desktop":2,"column_alignment":"left","background_style":"none","button_label":"","button_link":"","color_scheme":"background-1","columns_mobile":"1","swipe_on_mobile":false,"padding_top":36,"padding_bottom":36}},"product-recommendations":{"type":"product-recommendations","disabled":true,"settings":{"heading":"You may also like","heading_size":"h2","columns_desktop":4,"color_scheme":"background-1","image_ratio":"square","show_secondary_image":true,"show_vendor":false,"show_rating":false,"columns_mobile":"2","padding_top":36,"padding_bottom":28}},"17567180656f927adc":{"type":"apps","blocks":{"bundlejoy_bundle_mRWAVi":{"type":"shopify:\/\/apps\/bundlejoy\/blocks\/bundle\/ae6aac81-91ff-4dc6-818d-4368c569c9fc","disabled":true,"settings":{"bb_bundle_show_header":true,"bb_bundle_header_text":"Bundles","bb_bundle_message_text":"Not sure where to start? Shopping for someone else? We’ve bundled together some of our crowd favourites, with an added discount.","bb_bundle_bg_color":"#111111","bb_bundle_text_color":"#ffffff","bb_bundle_container_bg_color":"#f2f2f7","bb_bundle_item_bg_color":"#e5e5ea","bb_bundle_item_sales_bg_color":"#ec008c","bb_bundle_custom_css":""}},"appstle_subscription_appstle_subscription_product_page_widget_CCHzrH":{"type":"shopify:\/\/apps\/appstle-subscription\/blocks\/appstle-subscription-product-page-widget\/fe257d39-6f88-4f35-ab08-bd437e3aa94e","disabled":true,"settings":{}},"easy_subscriptions_easy_subscription_bundle_gR3Mqi":{"type":"shopify:\/\/apps\/easy-subscriptions\/blocks\/easy-subscription-bundle\/62ae0f16-e4ee-41c3-a62d-125b812e0b06","disabled":true,"settings":{"id":"MainContent","esb_create_new_url":""}}},"block_order":["bundlejoy_bundle_mRWAVi","appstle_subscription_appstle_subscription_product_page_widget_CCHzrH","easy_subscriptions_easy_subscription_bundle_gR3Mqi"],"settings":{"include_margins":true}},"175671919912eed1fe":{"type":"apps","blocks":{"easy_subscriptions_subscription_widget_YUWTRb":{"type":"shopify:\/\/apps\/easy-subscriptions\/blocks\/subscription-widget\/62ae0f16-e4ee-41c3-a62d-125b812e0b06","settings":{"pcolor":"#ffffff","scolor":"#303030","bcolor":"rgba(0,0,0,0)","easy-is-currency-code":false,"widget-feature-product":"","eca-title-font-size":15,"eca-text-font-size":16,"eca-price-font-size":16}}},"block_order":["easy_subscriptions_subscription_widget_YUWTRb"],"disabled":true,"settings":{"include_margins":true}}},"order":["main","image-with-text","multicolumn","product-recommendations","17567180656f927adc","175671919912eed1fe"]}
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-product",
+      "blocks": {
+        "sub_widget_3XBrgF": {
+          "type": "sub_widget",
+          "settings": {}
+        },
+        "bundlejoy_bundle_8JWiBH": {
+          "type": "shopify://apps/bundlejoy/blocks/bundle/ae6aac81-91ff-4dc6-818d-4368c569c9fc",
+          "disabled": true,
+          "settings": {
+            "bb_bundle_show_header": true,
+            "bb_bundle_header_text": "Bundles",
+            "bb_bundle_message_text": "Not sure where to start? Shopping for someone else? We’ve bundled together some of our crowd favourites, with an added discount.",
+            "bb_bundle_bg_color": "#111111",
+            "bb_bundle_text_color": "#ffffff",
+            "bb_bundle_container_bg_color": "#f2f2f7",
+            "bb_bundle_item_bg_color": "#e5e5ea",
+            "bb_bundle_item_sales_bg_color": "#ec008c",
+            "bb_bundle_custom_css": ""
+          }
+        },
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "appstle_bundles_appstle_classic_bundle_zU6EMq": {
+          "type": "shopify://apps/appstle-bundles/blocks/appstle-classic-bundle/8909921b-2d24-4d68-9b12-9d045d3dcb0a",
+          "disabled": true,
+          "settings": {}
+        },
+        "loop_subscriptions_loop_widget_Ud9epY": {
+          "type": "shopify://apps/loop-subscriptions/blocks/loop_widget/267a7c64-5cb3-4552-b817-5485165f0a0b",
+          "disabled": true,
+          "settings": {}
+        },
+        "caption": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.metafields.descriptors.subtitle.value }}",
+            "text_style": "subtitle"
+          }
+        },
+        "price": {
+          "type": "price",
+          "settings": {}
+        },
+        "variant_picker": {
+          "type": "variant_picker",
+          "settings": {
+            "picker_type": "button"
+          }
+        },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
+        "bulk_quantity_picker_NC7TED": {
+          "type": "bulk_quantity_picker",
+          "settings": {
+            "show_on_all_products": true,
+            "selected_product": "",
+            "selected_collection": "",
+            "pack_1_label": "1 Piece",
+            "pack_1_quantity": 1,
+            "pack_1_discount": 0,
+            "pack_1_badge": false,
+            "pack_1_badge_text": "High in Demand",
+            "pack_2_label": "3 Piece Bundle",
+            "pack_2_quantity": 3,
+            "pack_2_discount": 10,
+            "pack_2_badge": true,
+            "pack_2_badge_text": "High in Demand",
+            "pack_3_label": "5 Piece Bundle",
+            "pack_3_quantity": 5,
+            "pack_3_discount": 20,
+            "pack_3_badge": false,
+            "pack_3_badge_text": "High in Demand",
+            "show_quantity_title": true,
+            "quantity_title_text": "Choose Quantity",
+            "unit_label": "Piece",
+            "show_original_price": true,
+            "show_pack_price": true,
+            "show_unit_price": true,
+            "show_discount_tag": true,
+            "show_zero_discount": true,
+            "corner_radius": 0.5,
+            "pack_spacing": 2.5,
+            "title_size": 1.7,
+            "original_price_size": 1.3,
+            "price_size": 1.5,
+            "unit_price_size": 1,
+            "inactive_text": "#121212",
+            "active_text": "#ffffff",
+            "active_bg": "#aca7a7",
+            "discount_text": "#ffffff",
+            "discount_size": 1.1,
+            "discount_bg": "#1877f2",
+            "badge_bg": "#eaae16",
+            "badge_size": 1,
+            "badge_text": "#ffffff"
+          }
+        },
+        "buy_buttons": {
+          "type": "buy_buttons",
+          "settings": {
+            "show_dynamic_checkout": true
+          }
+        },
+        "description": {
+          "type": "description",
+          "settings": {}
+        },
+        "collapsible-row-0": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Materials",
+            "icon": "leather",
+            "content": "",
+            "page": ""
+          }
+        },
+        "collapsible-row-1": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Shipping & Returns",
+            "icon": "truck",
+            "content": "",
+            "page": ""
+          }
+        },
+        "collapsible-row-2": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Dimensions",
+            "icon": "ruler",
+            "content": "",
+            "page": ""
+          }
+        },
+        "collapsible-row-3": {
+          "type": "collapsible_tab",
+          "settings": {
+            "heading": "Care Instructions",
+            "icon": "heart",
+            "content": "",
+            "page": ""
+          }
+        },
+        "share": {
+          "type": "share",
+          "settings": {
+            "share_label": "Share"
+          }
+        },
+        "easy_subscriptions_subscription_widget_TTYdfh": {
+          "type": "shopify://apps/easy-subscriptions/blocks/subscription-widget/62ae0f16-e4ee-41c3-a62d-125b812e0b06",
+          "settings": {
+            "pcolor": "#ffffff",
+            "scolor": "#303030",
+            "bcolor": "rgba(0,0,0,0)",
+            "easy-is-currency-code": false,
+            "widget-feature-product": "",
+            "eca-title-font-size": 15,
+            "eca-text-font-size": 16,
+            "eca-price-font-size": 16
+          }
+        }
+      },
+      "block_order": [
+        "sub_widget_3XBrgF",
+        "bundlejoy_bundle_8JWiBH",
+        "vendor",
+        "title",
+        "appstle_bundles_appstle_classic_bundle_zU6EMq",
+        "loop_subscriptions_loop_widget_Ud9epY",
+        "caption",
+        "price",
+        "variant_picker",
+        "quantity_selector",
+        "bulk_quantity_picker_NC7TED",
+        "buy_buttons",
+        "description",
+        "collapsible-row-0",
+        "collapsible-row-1",
+        "collapsible-row-2",
+        "collapsible-row-3",
+        "share",
+        "easy_subscriptions_subscription_widget_TTYdfh"
+      ],
+      "settings": {
+        "enable_sticky_info": true,
+        "gallery_layout": "stacked",
+        "media_size": "large",
+        "mobile_thumbnails": "hide",
+        "hide_variants": true,
+        "enable_video_looping": false,
+        "padding_top": 36,
+        "padding_bottom": 12
+      }
+    },
+    "image-with-text": {
+      "type": "image-with-text",
+      "blocks": {
+        "image-with-text-0": {
+          "type": "heading",
+          "settings": {
+            "heading": "Image with text",
+            "heading_size": "h1"
+          }
+        },
+        "image-with-text-1": {
+          "type": "text",
+          "settings": {
+            "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+            "text_style": "body"
+          }
+        }
+      },
+      "block_order": [
+        "image-with-text-0",
+        "image-with-text-1"
+      ],
+      "settings": {
+        "height": "small",
+        "desktop_image_width": "medium",
+        "layout": "text_first",
+        "desktop_content_position": "top",
+        "desktop_content_alignment": "left",
+        "content_layout": "no-overlap",
+        "color_scheme": "background-2",
+        "mobile_content_alignment": "left",
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "multicolumn": {
+      "type": "multicolumn",
+      "blocks": {
+        "column-0": {
+          "type": "column",
+          "settings": {
+            "title": "Free Shipping",
+            "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+            "link_label": "",
+            "link": ""
+          }
+        },
+        "column-1": {
+          "type": "column",
+          "settings": {
+            "title": "Hassle-Free Exchanges",
+            "text": "<p>Pair text with an image to focus on your chosen product, collection, or blog post. Add details on availability, style, or even provide a review.</p>",
+            "link_label": "",
+            "link": ""
+          }
+        }
+      },
+      "block_order": [
+        "column-0",
+        "column-1"
+      ],
+      "settings": {
+        "title": "",
+        "heading_size": "h1",
+        "image_width": "full",
+        "image_ratio": "adapt",
+        "columns_desktop": 2,
+        "column_alignment": "left",
+        "background_style": "none",
+        "button_label": "",
+        "button_link": "",
+        "color_scheme": "background-1",
+        "columns_mobile": "1",
+        "swipe_on_mobile": false,
+        "padding_top": 36,
+        "padding_bottom": 36
+      }
+    },
+    "product-recommendations": {
+      "type": "product-recommendations",
+      "disabled": true,
+      "settings": {
+        "heading": "You may also like",
+        "heading_size": "h2",
+        "columns_desktop": 4,
+        "color_scheme": "background-1",
+        "image_ratio": "square",
+        "show_secondary_image": true,
+        "show_vendor": false,
+        "show_rating": false,
+        "columns_mobile": "2",
+        "padding_top": 36,
+        "padding_bottom": 28
+      }
+    },
+    "17567180656f927adc": {
+      "type": "apps",
+      "blocks": {
+        "bundlejoy_bundle_mRWAVi": {
+          "type": "shopify://apps/bundlejoy/blocks/bundle/ae6aac81-91ff-4dc6-818d-4368c569c9fc",
+          "disabled": true,
+          "settings": {
+            "bb_bundle_show_header": true,
+            "bb_bundle_header_text": "Bundles",
+            "bb_bundle_message_text": "Not sure where to start? Shopping for someone else? We’ve bundled together some of our crowd favourites, with an added discount.",
+            "bb_bundle_bg_color": "#111111",
+            "bb_bundle_text_color": "#ffffff",
+            "bb_bundle_container_bg_color": "#f2f2f7",
+            "bb_bundle_item_bg_color": "#e5e5ea",
+            "bb_bundle_item_sales_bg_color": "#ec008c",
+            "bb_bundle_custom_css": ""
+          }
+        },
+        "appstle_subscription_appstle_subscription_product_page_widget_CCHzrH": {
+          "type": "shopify://apps/appstle-subscription/blocks/appstle-subscription-product-page-widget/fe257d39-6f88-4f35-ab08-bd437e3aa94e",
+          "disabled": true,
+          "settings": {}
+        },
+        "easy_subscriptions_easy_subscription_bundle_gR3Mqi": {
+          "type": "shopify://apps/easy-subscriptions/blocks/easy-subscription-bundle/62ae0f16-e4ee-41c3-a62d-125b812e0b06",
+          "disabled": true,
+          "settings": {
+            "id": "MainContent",
+            "esb_create_new_url": ""
+          }
+        }
+      },
+      "block_order": [
+        "bundlejoy_bundle_mRWAVi",
+        "appstle_subscription_appstle_subscription_product_page_widget_CCHzrH",
+        "easy_subscriptions_easy_subscription_bundle_gR3Mqi"
+      ],
+      "settings": {
+        "include_margins": true
+      }
+    },
+    "175671919912eed1fe": {
+      "type": "apps",
+      "blocks": {
+        "easy_subscriptions_subscription_widget_YUWTRb": {
+          "type": "shopify://apps/easy-subscriptions/blocks/subscription-widget/62ae0f16-e4ee-41c3-a62d-125b812e0b06",
+          "settings": {
+            "pcolor": "#ffffff",
+            "scolor": "#303030",
+            "bcolor": "rgba(0,0,0,0)",
+            "easy-is-currency-code": false,
+            "widget-feature-product": "",
+            "eca-title-font-size": 15,
+            "eca-text-font-size": 16,
+            "eca-price-font-size": 16
+          }
+        }
+      },
+      "block_order": [
+        "easy_subscriptions_subscription_widget_YUWTRb"
+      ],
+      "disabled": true,
+      "settings": {
+        "include_margins": true
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image-with-text",
+    "multicolumn",
+    "product-recommendations",
+    "17567180656f927adc",
+    "175671919912eed1fe"
+  ]
+}

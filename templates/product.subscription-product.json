@@ -12,6 +12,17 @@
     "main": {
       "type": "main-product",
       "blocks": {
+        "title": {
+          "type": "title",
+          "settings": {}
+        },
+        "vendor": {
+          "type": "text",
+          "settings": {
+            "text": "{{ product.vendor }}",
+            "text_style": "uppercase"
+          }
+        },
         "sub_widget_3XBrgF": {
           "type": "sub_widget",
           "settings": {}
@@ -31,17 +42,6 @@
             "bb_bundle_custom_css": ""
           }
         },
-        "vendor": {
-          "type": "text",
-          "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "uppercase"
-          }
-        },
-        "title": {
-          "type": "title",
-          "settings": {}
-        },
         "appstle_bundles_appstle_classic_bundle_zU6EMq": {
           "type": "shopify://apps/appstle-bundles/blocks/appstle-classic-bundle/8909921b-2d24-4d68-9b12-9d045d3dcb0a",
           "disabled": true,
@@ -54,6 +54,7 @@
         },
         "caption": {
           "type": "text",
+          "disabled": true,
           "settings": {
             "text": "{{ product.metafields.descriptors.subtitle.value }}",
             "text_style": "subtitle"
@@ -61,20 +62,24 @@
         },
         "price": {
           "type": "price",
+          "disabled": true,
           "settings": {}
         },
         "variant_picker": {
           "type": "variant_picker",
+          "disabled": true,
           "settings": {
             "picker_type": "button"
           }
         },
         "quantity_selector": {
           "type": "quantity_selector",
+          "disabled": true,
           "settings": {}
         },
         "bulk_quantity_picker_NC7TED": {
           "type": "bulk_quantity_picker",
+          "disabled": true,
           "settings": {
             "show_on_all_products": true,
             "selected_product": "",
@@ -121,6 +126,7 @@
         },
         "buy_buttons": {
           "type": "buy_buttons",
+          "disabled": true,
           "settings": {
             "show_dynamic_checkout": true
           }
@@ -173,6 +179,7 @@
         },
         "easy_subscriptions_subscription_widget_TTYdfh": {
           "type": "shopify://apps/easy-subscriptions/blocks/subscription-widget/62ae0f16-e4ee-41c3-a62d-125b812e0b06",
+          "disabled": true,
           "settings": {
             "pcolor": "#ffffff",
             "scolor": "#303030",
@@ -186,10 +193,10 @@
         }
       },
       "block_order": [
+        "title",
+        "vendor",
         "sub_widget_3XBrgF",
         "bundlejoy_bundle_8JWiBH",
-        "vendor",
-        "title",
         "appstle_bundles_appstle_classic_bundle_zU6EMq",
         "loop_subscriptions_loop_widget_Ud9epY",
         "caption",

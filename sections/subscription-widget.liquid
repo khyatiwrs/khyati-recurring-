@@ -1,0 +1,944 @@
+<div id="subscription-section" style="max-width:800px;margin:0 auto;">
+
+  
+
+    <!-- SECTION 2: Dynamic Subscription Widget -->
+    <div id="subscription-widget-container" style="display:none;">
+      <h2 style="margin-bottom:20px;font-size:24px;font-weight:600;display:flex;align-items:center;gap:10px;">
+  
+        Purchase Option
+      </h2>
+      
+      <div >
+        
+        <!-- Force subscription flow; keep input for compatibility -->
+        <input type="radio" name="purchase-option" value="subscription" checked hidden>
+  
+        <!-- Subscription Frequency Dropdown -->
+        <div >
+          <div id="frequency-options"></div>
+        </div>
+      </div>
+  
+      <!-- Subscription Summary moved below products -->
+    </div>
+    <!-- SECTION 1: Product Selection (moved below per request) -->
+    <div style="margin-top:24px;margin-bottom:40px;">
+      <h2 style="margin-bottom:20px;font-size:24px;font-weight:600;display:flex;align-items:center;gap:10px;">
+       
+        Available Products
+      </h2>
+      <div id="product-list" style="display:grid;gap:12px;grid-template-columns:repeat(3,1fr);">
+        {% assign sub_collection = collections['test-subscription-plan'] %}
+  
+        {% if sub_collection and sub_collection.products.size > 0 %}
+          {% for sub_product in sub_collection.products %}
+            <div class="sub-product" style="position:relative;border:1px solid #e0e0e0;border-radius:12px;padding:8px;background:#fff;transition:box-shadow 0.2s ease;text-align:center;">
+                <input type="checkbox" 
+                       class="product-checkbox" 
+                       data-id="{{ sub_product.variants.first.id }}" 
+                       data-name="{{ sub_product.title }}" 
+                       data-price="{{ sub_product.price }}"
+                     data-product="{{ sub_product | json | escape }}"
+                     style="position:absolute;top:10px;right:10px;width:18px;height:18px;accent-color:#007bff;cursor:pointer;"
+                       {% if forloop.first %}checked{% endif %}>
+  
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                <img src="{{ sub_product.featured_image | img_url: '120x120' }}" 
+                     alt="{{ sub_product.title }}"
+                     style="width:60px;height:60px;object-fit:cover;border-radius:10px;border:1px solid #f0f0f0;">
+                <div style="width:100%;">
+                  <div style="font-weight:600;font-size:14px;color:#333;line-height:1.3;min-height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:120px;margin:0 auto;display:block;">{{ sub_product.title }}</div>
+                  <div class="product-price" style="font-size:13px;color:#666;margin-top:2px;">${{ sub_product.price | money_without_currency }}</div>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p style="padding:20px;text-align:center;color:#666;background:#f9f9f9;border-radius:8px;">No subscription products found.</p>
+        {% endif %}
+      </div>
+    </div>
+    
+    <!-- Subscription Summary BELOW products with Add to Cart inside -->
+    <div id="subscription-summary" style="display:none;margin:0 0 24px 0;padding:15px;background:#e8f5e8;border-radius:8px;border-left:4px solid #28a745;">
+      <div style="font-size:14px;color:#155724;margin-bottom:8px;" id="summary-text"></div>
+      <button style="background:none;border:none;color:#007bff;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;margin-bottom:15px;" onclick="showSubscriptionDetails()">
+        <span>ℹ️</span>
+        Subscription Details
+      </button>
+      <button id="subscription-add-to-cart" 
+              style="width:100%;padding:12px;background:#007bff;color:white;border:none;border-radius:6px;font-size:16px;font-weight:600;cursor:pointer;transition:background-color 0.2s ease;"
+              onmouseover="this.style.backgroundColor='#0056b3'" 
+              onmouseout="this.style.backgroundColor='#007bff'"
+              onclick="addSubscriptionToCart()">
+        Add to Cart
+      </button>
+    </div>
+  </div>
+  
+  <!-- Custom Cart Notification Popup -->
+  <div id="custom-cart-notification" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:8px;padding:0;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;">
+      
+      <!-- Header -->
+      <div style="padding:20px 20px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:20px;height:20px;background:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M10 3L4.5 8.5L2 6" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span style="font-size:16px;font-weight:600;color:#000;">Item added to your cart</span>
+        </div>
+        <button onclick="closeCartNotification()" style="background:none;border:none;cursor:pointer;padding:5px;">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M15 5L5 15M5 5L15 15" stroke="#000" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+  
+      <!-- Product Details -->
+      <div id="cart-notification-content" style="padding:20px;">
+        <!-- Product info will be populated here -->
+      </div>
+  
+      <!-- Action Buttons -->
+      <div style="padding:0 20px 20px 20px;display:flex;flex-direction:column;gap:12px;">
+        <button id="view-cart-btn" onclick="viewCart()" style="width:100%;padding:12px;background:white;border:1px solid #000;border-radius:4px;color:#000;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s ease;">
+          View my cart (<span id="cart-count">0</span>)
+        </button>
+        <button id="checkout-btn" onclick="checkout()" style="width:100%;padding:12px;background:#000;border:none;border-radius:4px;color:white;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.2s ease;">
+          Check out
+        </button>
+        <button onclick="closeCartNotification()" style="background:none;border:none;color:#000;text-decoration:underline;font-size:14px;cursor:pointer;padding:8px;">
+          Continue shopping
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  function showSubscriptionDetails() {
+    alert("Subscription Details:\n\n• Auto-renews monthly\n• Skip or cancel anytime\n• Save money with subscription discounts\n• Free shipping on all orders");
+  }
+  
+  function addSubscriptionToCart() {
+    const selectedProducts = window.selectedProducts || {};
+    const productIds = Object.keys(selectedProducts);
+    
+    console.log("=== ADD TO CART DEBUG ===");
+    console.log("Selected products:", selectedProducts);
+    console.log("Product IDs:", productIds);
+    console.log("Number of products:", productIds.length);
+    
+    if (productIds.length === 0) {
+      alert("Please select at least one product");
+      return;
+    }
+    
+    // Check if subscription plan is selected
+    const purchaseOption = document.querySelector('input[name="purchase-option"]:checked');
+    const isSubscription = purchaseOption && purchaseOption.value === 'subscription';
+    const selectedFrequencyPlan = window.selectedFrequencyPlan;
+    
+    console.log("Purchase option:", purchaseOption ? purchaseOption.value : 'none');
+    console.log("Is subscription:", isSubscription);
+    console.log("Selected frequency plan:", selectedFrequencyPlan);
+    
+    // Add each selected product to cart sequentially to avoid conflicts
+    let addedProducts = {};
+    let currentIndex = 0;
+    
+    function addNextProduct() {
+      if (currentIndex >= productIds.length) {
+        // All products added successfully
+        console.log("All products added successfully:", addedProducts);
+        showCartSuccess(addedProducts);
+        return;
+      }
+      
+      const productId = productIds[currentIndex];
+      const product = selectedProducts[productId];
+      
+      console.log(`Adding product ${currentIndex + 1}/${productIds.length}:`, productId, product);
+      
+      // Determine if we should add with subscription discount
+      if (isSubscription && selectedFrequencyPlan) {
+        // Check whether this product actually supports the selected selling plan
+        let productJson = product && product.product ? product.product : null;
+        let productSupportsPlan = false;
+        let variantSupportsPlan = false;
+        if (productJson && Array.isArray(productJson.selling_plan_groups)) {
+          productJson.selling_plan_groups.forEach(g => {
+            if (g && g.id === "c1aa9e8783b21b9cb4a2f3d208e388edfd3013e8") {
+              productSupportsPlan = true;
+              if (Array.isArray(g.selling_plans)) {
+                variantSupportsPlan = g.selling_plans.some(sp => sp.id === selectedFrequencyPlan.id);
+              }
+            }
+          });
+        }
+  
+        if (productSupportsPlan && variantSupportsPlan) {
+          console.log("Adding WITH selling_plan (supported by product):", selectedFrequencyPlan.id, productId);
+          addProductToCartWithDiscount(productId, 1, selectedFrequencyPlan)
+          .then((response) => {
+            console.log(`Product ${productId} added with discount successfully:`, response);
+            addedProducts[productId] = product;
+            currentIndex++;
+            addNextProduct(); // Add next product
+          })
+          .catch((error) => {
+            console.error(`Error adding product ${productId} with discount:`, error);
+            // Fallback: try WITHOUT selling_plan so user can still add item
+            addProductToCart(productId, 1)
+              .then((response) => {
+                console.log(`Fallback success (no plan) for ${productId}:`, response);
+                addedProducts[productId] = product;
+                currentIndex++;
+                addNextProduct();
+              })
+              .catch((err2) => {
+                console.error(`Fallback also failed for ${productId}:`, err2);
+                alert(`Error adding product "${product.name}" to cart. Please try again.`);
+              });
+          });
+        } else {
+          console.log("Selected selling_plan not supported by this product. Adding WITHOUT selling_plan:", productId);
+          addProductToCart(productId, 1)
+            .then((response) => {
+              console.log(`Product ${productId} added without discount (plan unsupported):`, response);
+              addedProducts[productId] = product;
+              currentIndex++;
+              addNextProduct();
+            })
+            .catch((error) => {
+              console.error(`Error adding product ${productId} (no plan):`, error);
+              alert(`Error adding product "${product.name}" to cart. Please try again.`);
+            });
+        }
+      } else {
+        // Add regular product without discount
+        addProductToCart(productId, 1)
+          .then((response) => {
+            console.log(`Product ${productId} added successfully:`, response);
+            addedProducts[productId] = product;
+            currentIndex++;
+            addNextProduct(); // Add next product
+          })
+          .catch((error) => {
+            console.error(`Error adding product ${productId}:`, error);
+            alert(`Error adding product "${product.name}" to cart. Please try again.`);
+          });
+      }
+    }
+    
+    // Start adding products
+    addNextProduct();
+  }
+  
+  function addProductToCart(variantId, quantity) {
+    console.log("Adding to cart - Variant ID:", variantId, "Quantity:", quantity);
+    
+    const formData = new FormData();
+    formData.append('id', variantId);
+    formData.append('quantity', quantity);
+    
+    return fetch('/cart/add.js', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      console.log("Cart response status:", response.status);
+      console.log("Cart response headers:", response.headers);
+      
+      if (!response.ok) {
+        return response.text().then(text => {
+          console.error("Cart error response:", text);
+          throw new Error(`Cart API error: ${response.status} - ${text}`);
+        });
+      }
+      
+      return response.json().then(data => {
+        console.log("Cart success response:", data);
+        return data;
+      });
+    })
+    .catch(error => {
+      console.error("Cart fetch error:", error);
+      throw error;
+    });
+  }
+  
+  function addProductToCartWithDiscount(variantId, quantity, subscriptionPlan) {
+    console.log("Adding to cart with discount - Variant ID:", variantId, "Quantity:", quantity, "Plan:", subscriptionPlan);
+    
+    const formData = new FormData();
+    formData.append('id', variantId);
+    formData.append('quantity', quantity);
+    formData.append('selling_plan', subscriptionPlan.id);
+    
+    return fetch('/cart/add.js', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => {
+      console.log("Cart with discount response status:", response.status);
+      console.log("Cart with discount response headers:", response.headers);
+      
+      if (!response.ok) {
+        return response.text().then(text => {
+          console.error("Cart with discount error response:", text);
+          throw new Error(`Cart API error: ${response.status} - ${text}`);
+        });
+      }
+      
+      return response.json().then(data => {
+        console.log("Cart with discount success response:", data);
+        return data;
+      });
+    })
+    .catch(error => {
+      console.error("Cart with discount fetch error:", error);
+      throw error;
+    });
+  }
+  
+  function showCartSuccess(addedProducts) {
+    // Show custom cart notification popup
+    showCustomCartNotification(addedProducts);
+  }
+  
+  function showCustomCartNotification(addedProducts) {
+    const popup = document.getElementById('custom-cart-notification');
+    const content = document.getElementById('cart-notification-content');
+    const cartCount = document.getElementById('cart-count');
+    
+    // Check if subscription plan is selected
+    const purchaseOption = document.querySelector('input[name="purchase-option"]:checked');
+    const isSubscription = purchaseOption && purchaseOption.value === 'subscription';
+    const selectedFrequencyPlan = window.selectedFrequencyPlan;
+    
+    // Build product display
+    let productHtml = '';
+    let totalItems = 0;
+    let totalPrice = 0;
+    
+    Object.values(addedProducts).forEach(product => {
+      totalItems++;
+      
+      // Calculate discounted price if subscription is selected
+      let displayPrice = product.price / 100;
+      let originalPrice = product.price / 100;
+      
+      if (isSubscription && selectedFrequencyPlan) {
+        // Calculate discount based on the selected plan
+        if (selectedFrequencyPlan.price_adjustments && selectedFrequencyPlan.price_adjustments.length > 0) {
+          selectedFrequencyPlan.price_adjustments.forEach(adj => {
+            if (adj.value_type === "percentage") {
+              const discountAmount = (product.price / 100) * (adj.value / 100);
+              displayPrice = (product.price / 100) - discountAmount;
+            } else if (adj.value_type === "fixed_amount") {
+              displayPrice = (product.price / 100) - (adj.value / 100);
+            }
+          });
+        }
+      }
+      
+      totalPrice += displayPrice;
+      
+      // Build price display - show discounted price as primary price
+      let priceHtml = '';
+      if (isSubscription && selectedFrequencyPlan && displayPrice < originalPrice) {
+        priceHtml = `
+          <div style="font-size:12px;color:#666;">
+            <span style="color:#28a745;font-weight:600;font-size:14px;">$${displayPrice.toFixed(2)}</span>
+            <span style="text-decoration:line-through;color:#999;margin-left:5px;font-size:11px;">$${originalPrice.toFixed(2)}</span>
+          </div>
+        `;
+      } else {
+        priceHtml = `<div style="font-size:12px;color:#666;">$${displayPrice.toFixed(2)}</div>`;
+      }
+      
+      productHtml += `
+        <div style="display:flex;gap:15px;margin-bottom:15px;">
+          <img src="${product.product.featured_image || '/assets/no-image.png'}" 
+               alt="${product.name}" 
+               style="width:60px;height:60px;object-fit:cover;border-radius:4px;border:1px solid #e0e0e0;">
+          <div style="flex:1;">
+            <div style="font-weight:500;margin-bottom:4px;">${product.name}</div>
+            ${priceHtml}
+          </div>
+        </div>
+      `;
+    });
+    
+    // Add subscription info if applicable
+    if (isSubscription && selectedFrequencyPlan) {
+      productHtml += `
+        <div style="margin-top:15px;padding:10px;background:#f8f9fa;border-radius:4px;border-left:3px solid #28a745;">
+          <div style="font-size:12px;color:#28a745;font-weight:500;">
+            ✓ ${selectedFrequencyPlan.name} Applied
+          </div>
+          <div style="font-size:11px;color:#666;margin-top:2px;">
+            Total: $${totalPrice.toFixed(2)} (${totalItems} item${totalItems > 1 ? 's' : ''})
+          </div>
+        </div>
+      `;
+    }
+    
+    content.innerHTML = productHtml;
+    cartCount.textContent = totalItems;
+    
+    // Show popup
+    popup.style.display = 'flex';
+    
+    // Auto-hide after 5 seconds (optional)
+    setTimeout(() => {
+      if (popup.style.display === 'flex') {
+        closeCartNotification();
+      }
+    }, 5000);
+  }
+  
+  function closeCartNotification() {
+    const popup = document.getElementById('custom-cart-notification');
+    popup.style.display = 'none';
+  }
+  
+  function viewCart() {
+    window.location.href = '/cart';
+  }
+  
+  function checkout() {
+    window.location.href = '/checkout';
+  }
+  
+  // Test function to debug cart issues
+  function testCart() {
+    console.log("=== Cart Test ===");
+    console.log("Selected products:", window.selectedProducts);
+    console.log("Product checkboxes:", document.querySelectorAll(".product-checkbox"));
+    
+    // Test with a simple product ID
+    const testVariantId = Object.keys(window.selectedProducts)[0];
+    if (testVariantId) {
+      console.log("Testing with variant ID:", testVariantId);
+      addProductToCart(testVariantId, 1)
+        .then(response => {
+          console.log("Test cart success:", response);
+        })
+        .catch(error => {
+          console.error("Test cart error:", error);
+        });
+    } else {
+      console.log("No products selected for testing");
+    }
+  }
+  
+  // Test function to debug price updates
+  function testPriceUpdate() {
+    console.log("=== Price Update Test ===");
+    console.log("Selected products:", window.selectedProducts);
+    console.log("Selected frequency plan:", window.selectedFrequencyPlan);
+    console.log("Product price elements:", document.querySelectorAll(".product-price"));
+    
+    // Check all checkboxes
+    const checkboxes = document.querySelectorAll(".product-checkbox");
+    console.log("All checkboxes:", checkboxes);
+    checkboxes.forEach((cb, index) => {
+      console.log(`Checkbox ${index}:`, {
+        id: cb.dataset.id,
+        name: cb.dataset.name,
+        price: cb.dataset.price,
+        checked: cb.checked
+      });
+    });
+    
+    // Check all product cards
+    const productCards = document.querySelectorAll(".sub-product");
+    console.log("All product cards:", productCards);
+    
+    // Force update prices
+    if (window.updateProductPricesInUI) {
+      window.updateProductPricesInUI();
+    } else {
+      console.log("updateProductPricesInUI function not found");
+    }
+  }
+  
+  // Simple test to manually set a frequency plan and update prices
+  function testWithFakePlan() {
+    console.log("=== Testing with fake plan ===");
+    
+    // Create a fake frequency plan
+    window.selectedFrequencyPlan = {
+      id: 4357226709,
+      name: "Monthly Subscription",
+      price_adjustments: [{
+        value_type: "percentage",
+        value: 10
+      }]
+    };
+    
+    console.log("Set fake plan:", window.selectedFrequencyPlan);
+    
+    // Force update prices
+    if (window.updateProductPricesInUI) {
+      window.updateProductPricesInUI();
+    }
+  }
+  
+  function selectFrequency(planId, planName, finalPrice, originalPrice) {
+    // Store the selected plan
+    window.selectedFrequencyPlan = {
+      id: planId,
+      name: planName,
+      finalPrice: finalPrice,
+      originalPrice: originalPrice
+    };
+    
+    console.log("Selected frequency:", planName, "Plan ID:", planId);
+    
+    // Update product prices in UI immediately
+    updateProductPricesInUI();
+    
+    // Only update subscription summary, not the entire widget to avoid infinite loop
+    if (window.updateSubscriptionSummary) {
+      window.updateSubscriptionSummary();
+    }
+  }
+  
+  function updateProductPricesInUI() {
+    console.log("=== updateProductPricesInUI called ===");
+    
+    const selectedProducts = window.selectedProducts || {};
+    const selectedFrequencyPlan = window.selectedFrequencyPlan;
+    
+    console.log("Selected products:", selectedProducts);
+    console.log("Selected frequency plan:", selectedFrequencyPlan);
+    
+    if (!selectedFrequencyPlan) {
+      console.log("No frequency plan selected, skipping price update");
+      return;
+    }
+    
+    console.log("Updating product prices in UI with plan:", selectedFrequencyPlan);
+    
+    // First, let's check all price elements
+    const allPriceElements = document.querySelectorAll('.product-price');
+    console.log("All price elements found:", allPriceElements);
+    
+    // Update each selected product's price display
+    Object.keys(selectedProducts).forEach(productId => {
+      const product = selectedProducts[productId];
+      const checkbox = document.querySelector(`input[data-id="${productId}"]`);
+      
+      console.log(`\n--- Updating price for product ${productId} ---`);
+      console.log("Product data:", product);
+      console.log("Checkbox found:", checkbox);
+      
+      if (checkbox) {
+        const productCard = checkbox.closest('.sub-product');
+        console.log("Product card found:", productCard);
+        
+        if (productCard) {
+          let priceElement = productCard.querySelector('.product-price');
+          console.log("Price element found:", priceElement);
+          console.log("Current price element content:", priceElement ? priceElement.innerHTML : 'null');
+          
+          if (priceElement) {
+            // Calculate discounted price
+            let discountedPrice = product.price / 100;
+            let originalPrice = product.price / 100;
+            
+            console.log("Original price:", originalPrice);
+            
+            if (selectedFrequencyPlan.price_adjustments && selectedFrequencyPlan.price_adjustments.length > 0) {
+              selectedFrequencyPlan.price_adjustments.forEach(adj => {
+                if (adj.value_type === "percentage") {
+                  const discountAmount = (product.price / 100) * (adj.value / 100);
+                  discountedPrice = (product.price / 100) - discountAmount;
+                  console.log(`Applied ${adj.value}% discount: ${originalPrice} -> ${discountedPrice}`);
+                } else if (adj.value_type === "fixed_amount") {
+                  discountedPrice = (product.price / 100) - (adj.value / 100);
+                  console.log(`Applied $${adj.value/100} discount: ${originalPrice} -> ${discountedPrice}`);
+                }
+              });
+            }
+            
+            // Update price display with discount
+            if (discountedPrice < originalPrice) {
+              const newHTML = `
+                <span style="text-decoration:line-through;color:#999;font-size:12px;">$${originalPrice.toFixed(2)}</span>
+                <span style="color:#28a745;font-weight:600;margin-left:5px;font-size:14px;">$${discountedPrice.toFixed(2)}</span>
+                <div style="font-size:10px;color:#28a745;margin-top:2px;">✓ ${selectedFrequencyPlan.name}</div>
+              `;
+              priceElement.innerHTML = newHTML;
+              console.log(`✅ Updated price display for ${product.name}: ${originalPrice} -> ${discountedPrice}`);
+              console.log("New HTML:", newHTML);
+            } else {
+              priceElement.innerHTML = `$${originalPrice.toFixed(2)}`;
+              console.log(`No discount applied for ${product.name}: $${originalPrice.toFixed(2)}`);
+            }
+          } else {
+            console.log("❌ Price element not found for product:", productId);
+          }
+        } else {
+          console.log("❌ Product card not found for product:", productId);
+        }
+      } else {
+        console.log("❌ Checkbox not found for product:", productId);
+      }
+    });
+    
+    console.log("=== updateProductPricesInUI completed ===");
+  }
+  
+  function resetProductPricesInUI() {
+    console.log("=== Resetting ALL product prices to original ===");
+    
+    // Reset ALL product prices, not just selected ones
+    const allCheckboxes = document.querySelectorAll('.product-checkbox');
+    console.log("Found checkboxes to reset:", allCheckboxes.length);
+    
+    allCheckboxes.forEach(checkbox => {
+      const productId = checkbox.dataset.id;
+      const productName = checkbox.dataset.name;
+      const productPrice = parseInt(checkbox.dataset.price, 10);
+      
+      console.log(`Resetting price for product ${productId} (${productName}):`, productPrice);
+      
+      const productCard = checkbox.closest('.sub-product');
+      if (productCard) {
+        const priceElement = productCard.querySelector('.product-price');
+        if (priceElement) {
+          // Reset to original price
+          const originalPrice = productPrice / 100;
+          priceElement.innerHTML = `$${originalPrice.toFixed(2)}`;
+          console.log(`✅ Reset price display for ${productName}: $${originalPrice.toFixed(2)}`);
+        } else {
+          console.log("❌ Price element not found for reset:", productId);
+        }
+      } else {
+        console.log("❌ Product card not found for reset:", productId);
+      }
+    });
+    
+    console.log("=== Price reset completed ===");
+  }
+  
+  // Debug function to check radio button states
+  function debugRadioButtons() {
+    const frequencyRadios = document.querySelectorAll('input[name="frequency-option"]');
+    console.log("=== Radio Button Debug ===");
+    frequencyRadios.forEach((radio, index) => {
+      console.log(`Radio ${index}:`, {
+        value: radio.value,
+        checked: radio.checked,
+        id: radio.id,
+        name: radio.name
+      });
+    });
+    console.log("Selected frequency:", document.querySelector('input[name="frequency-option"]:checked')?.value);
+  }
+  
+  // Test function to manually show delivery frequency
+  function showDeliveryFrequency() {
+    const deliveryFrequency = document.getElementById("delivery-frequency");
+    if (deliveryFrequency) {
+      deliveryFrequency.style.display = "block";
+      console.log("Manually showing delivery frequency section");
+    } else {
+      console.log("ERROR: delivery-frequency element not found!");
+    }
+  }
+  
+  // Test function to check all elements
+  function checkElements() {
+    console.log("=== Element Check ===");
+    console.log("delivery-frequency:", document.getElementById("delivery-frequency"));
+    console.log("frequency-options:", document.getElementById("frequency-options"));
+    console.log("subscription-widget-container:", document.getElementById("subscription-widget-container"));
+    console.log("purchase-option subscription:", document.querySelector('input[name="purchase-option"][value="subscription"]'));
+  }
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const subscriptionPlans = {{ product.selling_plan_groups | json }};
+    console.log("Available subscription plans:", subscriptionPlans);
+  
+    const productList = document.getElementById("product-list");
+    const subscriptionWidgetContainer = document.getElementById("subscription-widget-container");
+    const regularPriceEl = document.getElementById("regular-price");
+    const subscriptionPriceEl = document.getElementById("subscription-price");
+    const deliveryFrequency = document.getElementById("delivery-frequency");
+    const frequencyOptions = document.getElementById("frequency-options");
+    const subscriptionSummary = document.getElementById("subscription-summary");
+    const summaryText = document.getElementById("summary-text");
+  
+    let selectedProducts = {};
+  
+    // Make selectedProducts globally accessible
+    window.selectedProducts = selectedProducts;
+    
+    // Strictly use ONLY the specified plan group; hardcoded fallback if missing
+    let sellingPlans = [];
+    let testSubscriptionPlan = Array.isArray(subscriptionPlans)
+      ? subscriptionPlans.find(p => p.id === "c1aa9e8783b21b9cb4a2f3d208e388edfd3013e8")
+      : null;
+    if (testSubscriptionPlan && Array.isArray(testSubscriptionPlan.selling_plans)) {
+      console.log("Using live plan group:", testSubscriptionPlan.id);
+      sellingPlans = testSubscriptionPlan.selling_plans;
+    } else {
+      console.warn("Specified plan group not found on product. Using hardcoded fallback.");
+      testSubscriptionPlan = {
+        id: "c1aa9e8783b21b9cb4a2f3d208e388edfd3013e8",
+        name: "test Subscription plan",
+        selling_plans: [
+          { id: 4357226709, name: "Monthly Subscription", price_adjustments: [{ value_type: "percentage", value: 10 }] },
+          { id: 4360896725, name: "Yearly Subscription",  price_adjustments: [{ value_type: "percentage", value: 5  }] }
+        ]
+      };
+      sellingPlans = testSubscriptionPlan.selling_plans;
+    }
+    
+    console.log("Selling plans to use:", sellingPlans);
+  
+    // Collect default checked product
+    document.querySelectorAll(".product-checkbox").forEach(cb => {
+      if (cb.checked) {
+        console.log("Default checked product:", cb.dataset);
+        selectedProducts[cb.dataset.id] = {
+          name: cb.dataset.name,
+          price: parseInt(cb.dataset.price, 10),
+          product: JSON.parse(cb.dataset.product)
+        };
+      }
+    });
+    
+    // Update global selectedProducts
+    window.selectedProducts = selectedProducts;
+    console.log("Initial selected products:", selectedProducts);
+  
+    // Show subscription widget if products are selected
+    updateSubscriptionWidget();
+  
+    // Checkbox handler
+    productList.addEventListener("change", function (e) {
+      if (e.target.classList.contains("product-checkbox")) {
+        const id = e.target.dataset.id;
+        const name = e.target.dataset.name;
+        const basePrice = parseInt(e.target.dataset.price, 10);
+        const product = JSON.parse(e.target.dataset.product);
+  
+        console.log("Checkbox changed:", id, name, e.target.checked);
+  
+        if (e.target.checked) {
+          selectedProducts[id] = { name, price: basePrice, product };
+          console.log("Product added to selection:", id);
+        } else {
+          delete selectedProducts[id];
+          console.log("Product removed from selection:", id);
+          
+          // Reset the price of the deselected product to original
+          const productCard = e.target.closest('.sub-product');
+          if (productCard) {
+            const priceElement = productCard.querySelector('.product-price');
+            if (priceElement) {
+              const originalPrice = basePrice / 100;
+              priceElement.innerHTML = `$${originalPrice.toFixed(2)}`;
+              console.log(`Reset price for deselected product ${name}: $${originalPrice.toFixed(2)}`);
+            }
+          }
+        }
+  
+        // Update global selectedProducts
+        window.selectedProducts = selectedProducts;
+        console.log("Updated selectedProducts:", selectedProducts);
+  
+        // If subscription is selected and there are still selected products, update their prices
+        const purchaseOption = document.querySelector('input[name="purchase-option"]:checked');
+        if (purchaseOption && purchaseOption.value === 'subscription' && window.selectedFrequencyPlan && Object.keys(selectedProducts).length > 0) {
+          console.log("Updating prices for remaining selected products after deselection");
+          if (window.updateProductPricesInUI) {
+            window.updateProductPricesInUI();
+          }
+        }
+  
+        updateSubscriptionWidget();
+      }
+    });
+  
+    // Purchase option handler
+    document.addEventListener("change", function(e) {
+      console.log("Change event:", e.target.name, e.target.value, e.target.checked);
+      if (e.target.name === "purchase-option") {
+        console.log("Purchase option changed to:", e.target.value);
+        
+        // Reset product prices when switching to regular purchase
+        if (e.target.value === 'regular') {
+          resetProductPricesInUI();
+        }
+        
+        updateSubscriptionWidget();
+        // Also update subscription summary to show/hide delivery frequency
+        updateSubscriptionSummary();
+        
+        // Force show delivery frequency if subscription is selected
+        if (e.target.value === "subscription") {
+          const deliveryFrequency = document.getElementById("delivery-frequency");
+          if (deliveryFrequency) {
+            deliveryFrequency.style.display = "block";
+            console.log("Force showing delivery frequency section");
+          }
+          
+          // If there's already a selected frequency plan, update prices immediately
+          if (window.selectedFrequencyPlan) {
+            console.log("Frequency plan already selected, updating prices immediately");
+            if (window.updateProductPricesInUI) {
+              window.updateProductPricesInUI();
+            }
+          }
+        }
+      }
+    });
+  
+    // Make functions globally accessible
+    window.updateSubscriptionWidget = updateSubscriptionWidget;
+    window.updateSubscriptionSummary = updateSubscriptionSummary;
+    window.debugRadioButtons = debugRadioButtons;
+    window.selectFrequency = selectFrequency;
+    window.showDeliveryFrequency = showDeliveryFrequency;
+    window.checkElements = checkElements;
+    window.addSubscriptionToCart = addSubscriptionToCart;
+    window.closeCartNotification = closeCartNotification;
+    window.viewCart = viewCart;
+    window.checkout = checkout;
+    window.testCart = testCart;
+    window.testPriceUpdate = testPriceUpdate;
+    window.testWithFakePlan = testWithFakePlan;
+    window.updateProductPricesInUI = updateProductPricesInUI;
+    window.resetProductPricesInUI = resetProductPricesInUI;
+  
+    function updateSubscriptionWidget() {
+      const productCount = Object.keys(selectedProducts).length;
+      console.log("updateSubscriptionWidget called, productCount:", productCount);
+      
+      if (productCount === 0) {
+        subscriptionWidgetContainer.style.display = "none";
+        console.log("No products selected, hiding widget");
+        return;
+      }
+  
+      subscriptionWidgetContainer.style.display = "block";
+      console.log("Products selected, showing widget");
+  
+      // Calculate total regular price
+      let totalRegularPrice = 0;
+      Object.values(selectedProducts).forEach(prod => {
+        totalRegularPrice += prod.price / 100;
+      });
+  
+      // Update regular/subscription price labels if present in DOM
+      if (typeof regularPriceEl !== 'undefined' && regularPriceEl) {
+        regularPriceEl.textContent = `$${totalRegularPrice.toFixed(2)} each`;
+      }
+      if (typeof subscriptionPriceEl !== 'undefined' && subscriptionPriceEl) {
+        subscriptionPriceEl.textContent = `from $${totalRegularPrice.toFixed(2)} /each`;
+      }
+  
+      // Always build frequency options when products are selected
+      console.log("Building frequency options...");
+      buildFrequencyOptions();
+  
+      // Update subscription summary
+      console.log("Updating subscription summary...");
+      updateSubscriptionSummary();
+    }
+  
+    function buildFrequencyOptions() {
+      const frequencyOptions = document.getElementById("frequency-options");
+      console.log("buildFrequencyOptions called, frequencyOptions element:", frequencyOptions);
+      if (!frequencyOptions) return;
+  
+      frequencyOptions.innerHTML = "";
+      if (!sellingPlans || sellingPlans.length === 0) return;
+  
+      // Build dropdown options (names only, no prices)
+      const plansById = {};
+      const optionHtml = sellingPlans.map((plan, idx) => {
+        plansById[plan.id] = plan;
+        return `<option value="${plan.id}" ${idx===0?'selected':''}>${plan.name}</option>`;
+      }).join('');
+  
+      // Render a bare select (no extra wrappers/labels)
+      frequencyOptions.innerHTML = `<select id="frequency-select" name="options[Select Subscription Term:]" style="width:100%;padding:10px 12px;border:1px solid #e0e0e0;border-radius:8px;font-size:14px;background:#fff;cursor:pointer;">
+        ${optionHtml}
+      </select>`;
+  
+      // Helper to set selected plan + refresh
+      function setPlanFromId(planId){
+        const chosen = plansById[planId];
+        if (!chosen) return;
+        let discountAmount = 0; let originalPrice = 0;
+        Object.values(selectedProducts).forEach(prod => {
+          originalPrice += prod.price / 100;
+          (chosen.price_adjustments || []).forEach(adj => {
+            if (adj.value_type === 'fixed_amount') discountAmount += adj.value / 100;
+            if (adj.value_type === 'percentage') discountAmount += (prod.price / 100) * (adj.value / 100);
+          });
+        });
+        window.selectedFrequencyPlan = {
+          id: chosen.id,
+          name: chosen.name,
+          finalPrice: originalPrice - discountAmount,
+          originalPrice: originalPrice,
+          price_adjustments: chosen.price_adjustments || []
+        };
+        if (window.updateProductPricesInUI) window.updateProductPricesInUI();
+        updateSubscriptionSummary();
+      }
+  
+      const selectEl = document.getElementById('frequency-select');
+      setPlanFromId(selectEl.value); // initialize
+      selectEl.addEventListener('change', function(){ setPlanFromId(this.value); });
+    }
+  
+    function updateSubscriptionSummary() {
+      // Delivery frequency container may not exist anymore; use dropdown presence instead
+      if (window.selectedFrequencyPlan) {
+        subscriptionSummary.style.display = "block";
+        const plan = window.selectedFrequencyPlan;
+        summaryText.textContent = `Your subscription payment will be $${plan.finalPrice.toFixed(2)} Auto-renews, skip or cancel anytime.`;
+      } else {
+        subscriptionSummary.style.display = "none";
+      }
+    }
+  
+    // Add direct click handler to subscription radio button
+    const subscriptionRadio = document.querySelector('input[name="purchase-option"][value="subscription"]');
+    if (subscriptionRadio) {
+      subscriptionRadio.addEventListener('click', function() {
+        console.log("Subscription radio button clicked directly");
+        setTimeout(() => {
+          const deliveryFrequency = document.getElementById("delivery-frequency");
+          if (deliveryFrequency) {
+            deliveryFrequency.style.display = "block";
+            console.log("Direct click: showing delivery frequency section");
+          }
+        }, 100);
+      });
+    }
+  
+    // Initialize
+    updateSubscriptionWidget();
+  });
+  </script>
+  

@@ -302,9 +302,16 @@
         id="ProductInfo-{{ section.id }}"
         class="product__info-container{% if section.settings.enable_sticky_info %} product__info-container--sticky{% endif %}"
       >
-           {% render 'custom-subscription-widget' %}
         {%- assign product_form_id = 'product-form-' | append: section.id -%}
-
+        
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'sub_widget' -%}
+            <div {{ block.shopify_attributes }}>
+              {% render 'custom-subscription-widget' %}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+        
         {%- for block in section.blocks -%}
           {%- case block.type -%}
             {%- when '@app' -%}
@@ -967,6 +974,11 @@
   "blocks": [
     {
       "type": "@app"
+    },
+    {
+      "type": "sub_widget",
+      "name": "Subscription widget",
+      "limit": 1
     },
     {
       "type": "text",
